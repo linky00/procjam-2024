@@ -170,7 +170,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "procjam_2024"
+name = "procjam-2024"
 version = "0.1.0"
 dependencies = [
  "godot",
