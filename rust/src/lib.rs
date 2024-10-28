@@ -7,6 +7,7 @@ mod tests {
     #[test]
     fn world_generator() {
         use crate::world::*;
+
         
         let world = world::World::generate_world();
         println!("{:?}",world.layers[0]);
@@ -30,5 +31,26 @@ mod tests {
             println!("{:?}", world.cities.get(&CityID(city_id)).unwrap().neighbours);
             println!("{:?}", world.cities.get(&CityID(city_id)).unwrap().name);
         }
+    }
+
+    #[test]
+    fn events() {
+        use crate::world::*;
+
+        // try creating some discrete events
+        let test_event: Event =
+            Event::new(vec![world::CharacterID(0)], 2, None, EventType::EventDeath);
+
+        let test_event2: Event = Event::new(
+            vec![world::CharacterID(0)],
+            1,
+            Some(4),
+            EventType::EventDeath,
+        );
+
+        println!("{:?}", test_event);
+        println!("{:?}", test_event2);
+
+        // test_event.add_event_during(world, event_id);
     }
 }
