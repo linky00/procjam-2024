@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://b2rc5fqxstdmg"]
+
+[ext_resource type="Texture2D" uid="uid://fgt6g5v7hyrw" path="res://icon.svg" id="1_rpyy4"]
+
+[node name="UIMain" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Outline" type="TextureRect" parent="HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("1_rpyy4")
+expand_mode = 2
