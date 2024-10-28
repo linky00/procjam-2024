@@ -2,30 +2,30 @@ use std::collections::HashMap;
 use rand::Rng;
 
 #[derive(Eq, Hash, PartialEq, Copy, Clone, Debug)]
-struct CityID(u32);
+pub struct CityID(pub u32);
 
 #[derive(Eq, Hash, PartialEq, Copy, Clone, Debug)]
-struct EventID(u32);
+pub struct EventID(u32);
 
 #[derive(Eq, Hash, PartialEq, Copy, Clone, Debug)]
-struct CharacterID(u32);
+pub struct CharacterID(u32);
 
 #[derive(Eq, Hash, PartialEq, Copy, Clone, Debug)]
-struct Year(i32);
+pub struct Year(i32);
 
-struct World {
-    cities: HashMap<CityID, City>,
+pub struct World {
+    pub cities: HashMap<CityID, City>,
     // events: HashMap<EventID, Event>,
     // characters: HashMap<CharacterID, Character>,
     city_id_counter: u32,
     event_id_counter: u32,
     character_id_counter: u32,
     
-    layers: [Vec<CityID>; 5]
+    pub layers: [Vec<CityID>; 5]
 }
 
 impl World {
-    fn new() -> Self {
+    pub fn new() -> Self {
         World {
             cities: HashMap::new(),
             city_id_counter: 0,
@@ -36,7 +36,7 @@ impl World {
         }
     }
     
-    fn generate_world() -> Self {
+    pub fn generate_world() -> Self {
         let mut world = World::new();
        
         
@@ -72,30 +72,18 @@ impl World {
     }
 }
 
-struct City {
-    name: String,
-    neighbours: Vec<CityID>,
-    events: Vec<EventID>
+pub struct City {
+    pub name: String,
+    pub neighbours: Vec<CityID>,
+    pub events: Vec<EventID>
 }
 
 impl City {
-    fn new() -> Self {
+    pub fn new() -> Self {
         City {
             name: "".to_string(),
             neighbours: Vec::new(),
             events: Vec::new()
         }
     }
-}
-
-
-fn main() {
-    let mut world = World::generate_world();
-    println!("{:?}",world.layers[0]);
-    println!("{:?}",world.layers[1]);
-    println!("{:?}",world.layers[2]);
-    println!("{:?}",world.layers[3]);
-    println!("{:?}",world.layers[4]);
-    
-    println!("{:?}", world.cities.get(&CityID(3)).unwrap().neighbours);
 }
