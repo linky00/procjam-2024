@@ -94,8 +94,12 @@ impl World {
         let id = self.city_id_counter;
         self.city_id_counter += 1;
         
-        let city = City::new();
+        let name = City::nameGen();
+        
+        let city = City::new(name);
         self.cities.insert(CityID(id), city);
+        
+        
         CityID(id)
     }
     
@@ -126,13 +130,31 @@ pub struct City {
     pub events: Vec<EventID>
 }
 
+const SOFTLETTERS: &'static [&'static str] = &["sh", "l", "m", "n", "r"];
+const HARDLETTERS: &'static [&'static str] = &["p", "b", "t", "g"];
+const VOWELS: &'static [&'static str] = &["a", "e", "i", "o", "oo", "ai"];
+
+const SUFFIXES: &'static [&'static str] = &["ford", "ton", "don", "dale", "by"];
+
+
 impl City {
-    pub fn new() -> Self {
+    pub fn new(name: String) -> Self {
         City {
-            name: "".to_string(),
+            name,
             neighbours: Vec::new(),
             events: Vec::new()
         }
+    }
+    
+    pub fn nameGen() -> String {
+        let mut first_syllable = "".to_string();
+        
+        first_syllable.push_str(HARDLETTERS.choose(&mut rand::thread_rng()).expect(""));
+        first_syllable.push_str(VOWELS.choose(&mut rand::thread_rng()).expect(""));
+        first_syllable.push_str(SOFTLETTERS.choose(&mut rand::thread_rng()).expect(""));
+        first_syllable.push_str(SUFFIXES.choose(&mut rand::thread_rng()).expect(""));
+        
+        first_syllable
     }
 }
 

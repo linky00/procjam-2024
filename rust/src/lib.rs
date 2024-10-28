@@ -18,16 +18,17 @@ mod tests {
         println!("{:?}",world.characters[&CharacterID(1)]);
         println!("{:?}",world.characters[&CharacterID(2)]);
     
-        //while true {
-        //    let mut city_id = String::new();
-        //    
-        //    std::io::stdin()
-        //        .read_line(&mut city_id)
-        //        .expect("Failed to read line");
-        //
-        //    let city_id: u32 = city_id.trim().parse().expect("");
-        //
-        //    println!("{:?}", world.cities.get(&CityID(city_id)).unwrap().neighbours);
-        //}
+        while true {
+            let mut city_id = String::new();
+            
+            std::io::stdin()
+                .read_line(&mut city_id)
+                .expect("Number should have been entered.");
+        
+            let city_id: u32 = city_id.trim().parse().expect("");
+        
+            println!("{:?}", world.cities.get(&CityID(city_id)).unwrap().neighbours);
+            println!("{:?}", world.cities.get(&CityID(city_id)).unwrap().name);
+        }
     }
 }
