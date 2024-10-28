@@ -1,5 +1,6 @@
 use rand::Rng;
 use std::collections::HashMap;
+use rand::seq::SliceRandom;
 
 #[derive(Eq, Hash, PartialEq, Copy, Clone, Debug)]
 pub struct CityID(pub u32);
@@ -46,25 +47,38 @@ impl World {
     pub fn generate_world() -> Self {
         let mut world = World::new();
 
-        // add start and end cities
-        world.layers[0] = vec![world.add_city(0)];
+       
+        // add end city
         world.layers[NUM_LAYERS - 1] = vec![world.add_city(NUM_LAYERS - 1)];
-
-        // add in between cities
-        for layer in 1..=NUM_LAYERS - 2 {
+        
+        // add in between cities - we will work from end to beginning so that each city is guaranteed to be connected to at least one city from the next layer
+        for layer in (1..=NUM_LAYERS - 2).rev() {
             let num_cities = rand::thread_rng().gen_range(2..=4);
-            for _ in (1..=num_cities) {
+            
+            for _ in 1..=num_cities {
+                // initialise new city
                 let new_city = world.add_city(layer);
                 world.layers[layer].push(new_city);
-
-                for city_id in world.layers[layer - 1].clone() {
-                    let mut prev_city = world.cities.get_mut(&city_id).unwrap();
-                    prev_city.neighbours.push(new_city);
-
-                    let mut new_city = world.cities.get_mut(&new_city).unwrap();
-                    new_city.neighbours.push(city_id);
+                
+                // randomly connect to other cities in next layer
+                let num_in_next_layer = world.layers[layer+1].len();
+                let num_connections = rand::thread_rng().gen_range(1..=num_in_next_layer);
+                let cities_in_next_layer = world.layers[layer+1].clone();
+                let cities_to_connect = cities_in_next_layer.choose_multiple(&mut rand::thread_rng(), num_connections);
+                
+                for city_id in cities_to_connect {
+                    world.connect_cities(&new_city, &city_id);
                 }
-            }
+            }  
+        }
+        
+        // add start city
+        
+        let start_city = world.add_city(0);
+        world.layers[0] = vec![start_city];
+        
+        for city_id in world.layers[1].clone() {
+            world.connect_cities(&start_city, &city_id);
         }
 
         // add characters at their start positions (for now just the first city)
@@ -84,11 +98,26 @@ impl World {
         let id = self.city_id_counter;
         self.city_id_counter += 1;
 
-        let city = City::new();
+        
+        let name = City::nameGen();
+        
+        let city = City::new(name);
         self.cities.insert(CityID(id), city);
+        
+        
         CityID(id)
     }
 
+
+    
+    fn connect_cities(&mut self, id1: &CityID, id2: &CityID) {
+        let mut city1 = self.cities.get_mut(id1).unwrap();
+        city1.neighbours.push(*id2);
+        
+        let mut city2 = self.cities.get_mut(id2).unwrap();
+        city2.neighbours.push(*id1);
+    }
+    
     fn add_character(
         &mut self,
         name: String,
@@ -115,13 +144,31 @@ pub struct City {
     pub events: Vec<EventID>,
 }
 
+const SOFTLETTERS: &'static [&'static str] = &["sh", "l", "m", "n", "r"];
+const HARDLETTERS: &'static [&'static str] = &["p", "b", "t", "g"];
+const VOWELS: &'static [&'static str] = &["a", "e", "i", "o", "oo", "ai"];
+
+const SUFFIXES: &'static [&'static str] = &["ford", "ton", "don", "dale", "by"];
+
+
 impl City {
-    pub fn new() -> Self {
+    pub fn new(name: String) -> Self {
         City {
-            name: "".to_string(),
+            name,
             neighbours: Vec::new(),
             events: Vec::new(),
         }
+    }
+    
+    pub fn nameGen() -> String {
+        let mut first_syllable = "".to_string();
+        
+        first_syllable.push_str(HARDLETTERS.choose(&mut rand::thread_rng()).expect(""));
+        first_syllable.push_str(VOWELS.choose(&mut rand::thread_rng()).expect(""));
+        first_syllable.push_str(SOFTLETTERS.choose(&mut rand::thread_rng()).expect(""));
+        first_syllable.push_str(SUFFIXES.choose(&mut rand::thread_rng()).expect(""));
+        
+        first_syllable
     }
 }
 
