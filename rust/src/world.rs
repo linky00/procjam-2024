@@ -13,15 +13,17 @@ pub struct CharacterID(u32);
 #[derive(Eq, Hash, PartialEq, Copy, Clone, Debug)]
 pub struct Year(i32);
 
+const NUM_LAYERS: i32 = 5;
+
 pub struct World {
     pub cities: HashMap<CityID, City>,
     // events: HashMap<EventID, Event>,
-    // characters: HashMap<CharacterID, Character>,
+    characters: HashMap<CharacterID, Character>,
     city_id_counter: u32,
     event_id_counter: u32,
     character_id_counter: u32,
     
-    pub layers: [Vec<CityID>; 5]
+    pub layers: [Vec<CityID>; NUM_LAYERS]
 }
 
 impl World {
@@ -39,10 +41,11 @@ impl World {
     pub fn generate_world() -> Self {
         let mut world = World::new();
        
-        
+        // add start and end cities
         world.layers[0] = vec![world.add_city(0)];
         world.layers[4] = vec![world.add_city(4)];
         
+        // add in between cities
         for layer in (1..=3) {
             let num_cities = rand::thread_rng().gen_range(2..=4);
             for _ in (1..=num_cities) {
@@ -70,6 +73,18 @@ impl World {
         self.cities.insert(CityID(id), city);
         CityID(id)
     }
+
+    fn add_character(&mut self, start_city: CityID) {
+        if (self.city_id_counter <= start_city) {
+            // error
+        }
+
+        let id = self.character_id_counter;
+        self.character_id_counter += 1;
+        let char = Character::new()
+        self.characters.insert(CharacterID(id), char);
+        CharacterID(id);
+    }
 }
 
 pub struct City {
@@ -83,6 +98,22 @@ impl City {
         City {
             name: "".to_string(),
             neighbours: Vec::new(),
+            events: Vec::new()
+        }
+    }
+}
+
+pub struct Character {
+    // used in textgen
+    pub name: String,
+    pub pronouns: [String, 3], // 1: nominative (ex. she, him, they) 2: accusative (ex: her, him, them) 3: dependent genitive (ex: her, his, their)
+    pub events: Vec<EventID>
+}
+
+impl Character {
+    pub fn new() -> Self {
+        Person {
+            name: "".to_string(),
             events: Vec::new()
         }
     }
