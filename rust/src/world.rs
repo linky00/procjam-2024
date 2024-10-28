@@ -20,7 +20,6 @@ const NUM_CHARACTERS: usize = 3;
 
 pub struct World {
     pub cities: HashMap<CityID, City>,
-    // events: HashMap<EventID, Event>,
     pub characters: HashMap<CharacterID, Character>,
     pub events: HashMap<EventID, Event>,
     city_id_counter: u32,
@@ -52,7 +51,7 @@ impl World {
         world.layers[NUM_LAYERS - 1] = vec![world.add_city(NUM_LAYERS - 1)];
 
         // add in between cities
-        for layer in (1..=NUM_LAYERS - 2) {
+        for layer in 1..=NUM_LAYERS - 2 {
             let num_cities = rand::thread_rng().gen_range(2..=4);
             for _ in (1..=num_cities) {
                 let new_city = world.add_city(layer);
@@ -160,9 +159,10 @@ impl Character {
 // event types
 #[derive(Debug)]
 pub enum EventType {
-    EventDeath,        // an event representing the death of a character.
+    EventDeath,     // an event representing the death of a character.
     EventEncounter, // an event representing a fleeting encounter between two people. An alive character could encounter a dead character.
     EventMoveTogether, // an event representing two characters moving together for a while.
+                    // add more!
 }
 
 // An event that has a start time and maybe an end time.
@@ -182,7 +182,7 @@ pub fn durations_overlap(
     end1: Option<usize>,
     end2: Option<usize>,
 ) -> bool {
-    if (start1 == start2) {
+    if start1 == start2 {
         true;
     }
     match (end1, end2) {
