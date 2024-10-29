@@ -340,21 +340,14 @@ impl World {
             city_populations: &mut HashMap<CityID, Vec<CharacterID>>,
             states: &Vec<CharacterState>,
         ) {
-            println!("Recalculating city populations...");
             let mut chars_found: Vec<usize> = Vec::new();
 
             // reset and recalculate
             for &city_id in cities {
                 let chars_in_city = get_characters_in_city(city_id, states);
-                // println!("City {:?} population: {:?}", city_id, chars_in_city);
                 chars_found.extend(chars_in_city.iter().map(|&CharacterID(charid)| charid));
                 city_populations.insert(city_id, chars_in_city);
             }
-
-            println!(
-                "Recalculated city populations as follows: {:?}",
-                city_populations
-            );
         }
 
         // set up values for history
