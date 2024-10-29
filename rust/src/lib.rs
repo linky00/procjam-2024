@@ -18,6 +18,7 @@ mod tests {
         println!("{:?}", world.characters[&CharacterID(1)]);
         println!("{:?}", world.characters[&CharacterID(2)]);
 
+        /*
         while true {
             let mut city_id = String::new();
 
@@ -33,6 +34,13 @@ mod tests {
             );
             println!("{:?}", world.cities.get(&CityID(city_id)).unwrap().name);
         }
+        */
+    }
+
+    #[test]
+    fn event_generator() {
+        let mut world = world::World::generate_world();
+        world.generate_events();
     }
 
     #[test]
