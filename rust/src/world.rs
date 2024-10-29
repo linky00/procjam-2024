@@ -163,7 +163,7 @@ impl World {
     }
 
     // generates events and places them in the event lists of cities and characters.
-    // run generate_world before running this or perish in the doomed narrative that you've created
+    // run generate_world before running this or perish in the doomed worldless narrative that you've created
     pub fn generate_events(&mut self) {
         struct CharacterState {
             character: CharacterID,
