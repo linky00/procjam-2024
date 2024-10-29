@@ -59,8 +59,7 @@ impl World {
     pub fn generate_world() -> Self {
         let mut world = World::new();
 
-        // add start and end cities
-        world.layers[0] = vec![world.add_city(0)];
+        // add end city
         world.layers[NUM_LAYERS - 1] = vec![world.add_city(NUM_LAYERS - 1)];
 
         // add in between cities - we will work from end to beginning so that each city is guaranteed to be connected to at least one city from the next layer
