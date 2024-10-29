@@ -41,26 +41,14 @@ mod tests {
     fn event_generator() {
         let mut world = world::World::generate_world();
         world.generate_events();
-    }
-
-    #[test]
-    fn events() {
-        use crate::world::*;
-
-        // try creating some discrete events
-        let test_event: Event =
-            Event::new(vec![world::CharacterID(0)], 2, None, EventType::EventDeath);
-
-        let test_event2: Event = Event::new(
-            vec![world::CharacterID(0)],
-            1,
-            Some(4),
-            EventType::EventDeath,
-        );
-
-        println!("{:?}", test_event);
-        println!("{:?}", test_event2);
-
-        // test_event.add_event_during(world, event_id);
+        println!("\nEvent Display:");
+        for (character_id, character) in world.characters {
+            println!("-------------------------");
+            println!("Character #{:?}'s events:", character_id);
+            for (event_id) in character.events {
+                let &ref event = world.events.get(&event_id).unwrap();
+                println!("event #{:?}: {:?},", event_id, event.summary);
+            }
+        }
     }
 }
