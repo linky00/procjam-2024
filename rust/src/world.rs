@@ -260,17 +260,11 @@ impl World {
         };
 
         let city_population = city_populations.get(&state.city).unwrap();
-        println!(
-            "Char {:?} is looking for people to encounter in city {:?}: {:?}...",
-            state.character, city_id, city_population
-        );
         let &encountered = city_population
             .iter()
             .filter(|&&id| id != state.character)
             .choose(rng)
             .unwrap();
-
-        println!("Found Character {:?}", encountered);
 
         // add encounter event
         self.add_event(
@@ -335,17 +329,12 @@ impl World {
 
         fn recalculate_city_populations(
             cities: Vec<&CityID>,
-            num_cities: usize,
-            num_chars: usize,
             city_populations: &mut HashMap<CityID, Vec<CharacterID>>,
             states: &Vec<CharacterState>,
         ) {
-            let mut chars_found: Vec<usize> = Vec::new();
-
             // reset and recalculate
             for &city_id in cities {
                 let chars_in_city = get_characters_in_city(city_id, states);
-                chars_found.extend(chars_in_city.iter().map(|&CharacterID(charid)| charid));
                 city_populations.insert(city_id, chars_in_city);
             }
         }
@@ -355,18 +344,10 @@ impl World {
         let mut time = 0;
         // set initial city populations
         let mut city_populations: HashMap<CityID, Vec<CharacterID>> = HashMap::new();
-        recalculate_city_populations(
-            self.cities.keys().collect(),
-            self.city_id_counter,
-            self.character_id_counter,
-            &mut city_populations,
-            &states,
-        );
+        recalculate_city_populations(self.cities.keys().collect(), &mut city_populations, &states);
 
         // start running history
         while time <= MAX_TIME {
-            println!("\nMoving to time t={:?} out of {:?}", time, MAX_TIME);
-
             for state_index in 0..states.len() {
                 // determine next events for each character
                 let state = &mut states[state_index];
@@ -388,8 +369,6 @@ impl World {
                 // recalculate city populations before next character acts
                 recalculate_city_populations(
                     self.cities.keys().collect(),
-                    self.city_id_counter,
-                    self.character_id_counter,
                     &mut city_populations,
                     &states,
                 );
