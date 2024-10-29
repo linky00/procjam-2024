@@ -1,8 +1,9 @@
+use core::num;
 use rand::distributions::WeightedIndex;
 use rand::prelude::Distribution;
+use rand::rngs::ThreadRng;
 use rand::seq::{IteratorRandom, SliceRandom};
 use rand::{thread_rng, Rng};
-use std::arch::x86_64::_CMP_LT_OQ;
 use std::cmp;
 use std::collections::HashMap;
 
@@ -20,9 +21,11 @@ pub struct Year(isize);
 
 // -- Constants --
 
-const MAX_TIME: usize = 5;
+const MAX_TIME: usize = 10;
 const NUM_LAYERS: usize = 5;
-const NUM_CHARACTERS: usize = 3;
+const MIN_CITIES_IN_LAYER: usize = 1;
+const MAX_CITIES_IN_LAYER: usize = 2;
+const NUM_CHARACTERS: usize = 6;
 const NUM_EVENTS: usize = 4;
 const LIST_EVENTS: [EventType; NUM_EVENTS] = [
     EventType::EventMove,
@@ -43,6 +46,12 @@ pub struct World {
     pub layers: [Vec<CityID>; NUM_LAYERS],
 }
 
+pub struct CharacterState {
+    character: CharacterID,
+    city: CityID,
+    event_probability_map: WeightedIndex<usize>,
+}
+
 impl World {
     pub fn new() -> Self {
         World {
@@ -58,13 +67,17 @@ impl World {
 
     pub fn generate_world() -> Self {
         let mut world = World::new();
+        println!("---- World Generation ----");
+
+        println!("Generating cities...");
 
         // add end city
         world.layers[NUM_LAYERS - 1] = vec![world.add_city(NUM_LAYERS - 1)];
 
         // add in between cities - we will work from end to beginning so that each city is guaranteed to be connected to at least one city from the next layer
         for layer in (1..=NUM_LAYERS - 2).rev() {
-            let num_cities = rand::thread_rng().gen_range(2..=4);
+            let num_cities =
+                rand::thread_rng().gen_range(MIN_CITIES_IN_LAYER..=MAX_CITIES_IN_LAYER);
 
             for _ in 1..=num_cities {
                 // initialise new city
@@ -91,6 +104,8 @@ impl World {
         for city_id in world.layers[1].clone() {
             world.connect_cities(&start_city, &city_id);
         }
+
+        println!("Generated {:?} cities", world.city_id_counter);
 
         // add characters
         for _ in (0..NUM_CHARACTERS) {
@@ -162,18 +177,133 @@ impl World {
         event_id
     }
 
+    fn event_move(
+        &mut self,
+        time: usize,
+        state: &mut CharacterState,
+        rng: &mut ThreadRng,
+        city_populations: &HashMap<CityID, Vec<CharacterID>>,
+    ) {
+        // determine city to move to
+        let curr_city = self.cities.get(&state.city).unwrap();
+        let &next_city = curr_city.neighbours.choose(rng).unwrap();
+
+        // change character city to next city
+        state.city = next_city;
+
+        // recalculate probability map
+        let population = city_populations.get(&next_city).unwrap().len();
+        // if the character moves to the last city, set probability of moving again to zero.
+        // otherwise, the probability is proportional to half the population of the city.
+        let next_city_id_num: usize = match next_city {
+            CityID(id) => id,
+        };
+        let last_city_id: usize = 0;
+        let new_prob = if next_city_id_num == last_city_id {
+            0
+        } else {
+            population / 2
+        };
+        // update move and encounter probabilities to the new city's context
+        let weight_updates = [(0, &new_prob), (2, &(population / 2))];
+        let update_result = state.event_probability_map.update_weights(&weight_updates);
+        match update_result {
+            Ok(_) => (),
+            Err(_) => {
+                // if no actions are possible, character will stop forever
+                state.event_probability_map = WeightedIndex::new([0, 0, 0, 1]).unwrap();
+            }
+        }
+
+        // add event to character's events
+        self.add_event(
+            vec![state.character],
+            time,
+            None,
+            EventType::EventMove,
+            next_city,
+            format!(
+                "Character #{:?} moved to City #{:?}",
+                state.character, next_city
+            ),
+        );
+    }
+
+    fn event_death(&mut self, time: usize, state: &mut CharacterState) {
+        // set all probabilities to zero except EventIdle
+        state.event_probability_map = WeightedIndex::new(&[0, 0, 0, 1]).unwrap();
+
+        // add death event
+        self.add_event(
+            vec![state.character],
+            time,
+            None,
+            EventType::EventMove,
+            state.city,
+            format!(
+                "Character #{:?} died in City #{:?}",
+                state.character, state.city
+            ),
+        );
+    }
+
+    fn event_encounter(
+        &mut self,
+        time: usize,
+        state: &mut CharacterState,
+        rng: &mut ThreadRng,
+        city_populations: &HashMap<CityID, Vec<CharacterID>>,
+    ) {
+        // pick random person from city to encounter
+        let city_id: usize = match state.city {
+            CityID(id) => id,
+        };
+
+        let city_population = city_populations.get(&state.city).unwrap();
+        println!(
+            "Char {:?} is looking for people to encounter in city {:?}: {:?}...",
+            state.character, city_id, city_population
+        );
+        let &encountered = city_population
+            .iter()
+            .filter(|&&id| id != state.character)
+            .choose(rng)
+            .unwrap();
+
+        println!("Found Character {:?}", encountered);
+
+        // add encounter event
+        self.add_event(
+            vec![state.character, encountered],
+            time,
+            None,
+            EventType::EventEncounter,
+            state.city,
+            format!(
+                "Character #{:?} encountered Character #{:?} in City #{:?}",
+                state.character, encountered, state.city
+            ),
+        );
+
+        // reduce probability of meeting after this to 0
+        // (until character moves to a new city)
+        let new_weights = [(2, &0)];
+        let update_result = state.event_probability_map.update_weights(&new_weights);
+        match update_result {
+            Ok(_) => (),
+            Err(_) => {
+                // if no actions are possible, character will stop forever
+                state.event_probability_map = WeightedIndex::new([0, 0, 0, 1]).unwrap();
+            }
+        }
+    }
+
     // generates events chronologically and places them in the event lists of cities and characters.
     // a character only visits a city once and only encounters at most one other character in a city
     // run generate_world before running this or perish in the doomed worldless narrative that you've created
     // TODO: clean this up and tweak values to get more interesting history!
     pub fn generate_events(&mut self) {
-        struct CharacterState {
-            character: CharacterID,
-            city: CityID,
-            event_probability_map: WeightedIndex<usize>,
-        }
-
-        println!("Generating events...");
+        println!("---- Event Generation ----");
 
         // set up initial states for each character
         let mut states = Vec::new(); // in order of character id
@@ -203,158 +333,74 @@ impl World {
             return chars_in_city;
         }
 
+        fn recalculate_city_populations(
+            cities: Vec<&CityID>,
+            num_cities: usize,
+            num_chars: usize,
+            city_populations: &mut HashMap<CityID, Vec<CharacterID>>,
+            states: &Vec<CharacterState>,
+        ) {
+            println!("Recalculating city populations...");
+            let mut chars_found: Vec<usize> = Vec::new();
+
+            // reset and recalculate
+            for &city_id in cities {
+                let chars_in_city = get_characters_in_city(city_id, states);
+                // println!("City {:?} population: {:?}", city_id, chars_in_city);
+                chars_found.extend(chars_in_city.iter().map(|&CharacterID(charid)| charid));
+                city_populations.insert(city_id, chars_in_city);
+            }
+
+            println!(
+                "Recalculated city populations as follows: {:?}",
+                city_populations
+            );
+        }
+
         // set up values for history
         let mut rng = thread_rng();
         let mut time = 0;
-        // all chars start at the first city (for now)
-        let mut city_populations: Vec<Vec<CharacterID>> = vec![Vec::new(); self.cities.len()];
-        city_populations[self.city_id_counter - 1] = self
-            .characters
-            .keys()
-            .map(|&char_id| char_id)
-            .collect::<Vec<CharacterID>>();
+        // set initial city populations
+        let mut city_populations: HashMap<CityID, Vec<CharacterID>> = HashMap::new();
+        recalculate_city_populations(
+            self.cities.keys().collect(),
+            self.city_id_counter,
+            self.character_id_counter,
+            &mut city_populations,
+            &states,
+        );
 
         // start running history
-        while time < MAX_TIME {
-            for state in states.iter_mut() {
+        while time <= MAX_TIME {
+            println!("\nMoving to time t={:?} out of {:?}", time, MAX_TIME);
+
+            for state_index in 0..states.len() {
                 // determine next events for each character
+                let state = &mut states[state_index];
                 let next_event = &LIST_EVENTS[state.event_probability_map.sample(&mut rng)];
 
                 // carry out event
                 match next_event {
                     EventType::EventIdle => (), // do nothing (event idle is not logged)
                     EventType::EventMove => {
-                        // determine city to move to
-                        let curr_city = self.cities.get(&state.city).unwrap();
-                        let &next_city = curr_city.neighbours.choose(&mut rng).unwrap();
-
-                        // change character city to next city
-                        state.city = next_city;
-
-                        // recalculate probability map
-                        let next_city_id_num: usize = match next_city {
-                            CityID(id) => id,
-                        };
-                        let population = city_populations[next_city_id_num].len();
-                        // if the character moves to the last city, set probability of moving again to zero.
-                        // otherwise, the probability is proportional to half the population of the city.
-                        let last_city_id: usize = 0;
-                        let new_prob = if next_city_id_num == last_city_id {
-                            0
-                        } else {
-                            population / 2
-                        };
-                        // update move and encounter probabilities to the new city's context
-                        let weight_updates = [(0, &new_prob), (2, &(population / 2))];
-                        let update_result =
-                            state.event_probability_map.update_weights(&weight_updates);
-                        match update_result {
-                            Ok(_) => (),
-                            Err(_) => {
-                                // if no actions are possible, character will stop forever
-                                state.event_probability_map =
-                                    WeightedIndex::new([0, 0, 0, 1]).unwrap();
-                            }
-                        }
-
-                        // add event to character's events
-                        self.add_event(
-                            vec![state.character],
-                            time,
-                            None,
-                            EventType::EventMove,
-                            next_city,
-                            format!(
-                                "Character #{:?} moved to City #{:?}",
-                                state.character, next_city
-                            ),
-                        );
+                        self.event_move(time, state, &mut rng, &city_populations);
                     }
-
                     EventType::EventDeath => {
-                        // set all probabilities to zero except EventIdle
-                        state.event_probability_map = WeightedIndex::new(&[0, 0, 0, 1]).unwrap();
-
-                        // add death event
-                        self.add_event(
-                            vec![state.character],
-                            time,
-                            None,
-                            EventType::EventMove,
-                            state.city,
-                            format!(
-                                "Character #{:?} died in City #{:?}",
-                                state.character, state.city
-                            ),
-                        );
+                        self.event_death(time, state);
                     }
-
                     EventType::EventEncounter => {
-                        // pick random person from city to encounter
-                        let city_id: usize = match state.city {
-                            CityID(id) => id,
-                        };
-                        println!(
-                            "Looking for people to encounter in city {:?}: {:?}",
-                            city_id, city_populations[city_id]
-                        );
-                        let &encountered = city_populations[city_id]
-                            .iter()
-                            .filter(|&&id| id != state.character)
-                            .choose(&mut rng)
-                            .unwrap();
-
-                        // add encounter event
-                        self.add_event(
-                            vec![state.character, encountered],
-                            time,
-                            None,
-                            EventType::EventEncounter,
-                            state.city,
-                            format!(
-                                "Character #{:?} encountered Character #{:?} in City #{:?}",
-                                state.character, encountered, state.city
-                            ),
-                        );
-
-                        // reduce probability of meeting after this to 0
-                        // (until character moves to a new city)
-                        let new_weights = [(2, &0)];
-                        let update_result =
-                            state.event_probability_map.update_weights(&new_weights);
-                        match update_result {
-                            Ok(_) => (),
-                            Err(_) => {
-                                // if no actions are possible, character will stop forever
-                                state.event_probability_map =
-                                    WeightedIndex::new([0, 0, 0, 1]).unwrap();
-                            }
-                        }
+                        self.event_encounter(time, state, &mut rng, &city_populations);
                     }
                 }
+                // recalculate city populations before next character acts
+                recalculate_city_populations(
+                    self.cities.keys().collect(),
+                    self.city_id_counter,
+                    self.character_id_counter,
+                    &mut city_populations,
+                    &states,
+                );
             }
-
-            // recalculate city populations to use in the next loop if required
-            let mut chars_found = Vec::new();
-            let mut city_populations: Vec<Vec<CharacterID>> = self
-                .cities
-                .keys()
-                .into_iter()
-                .map(|&cityid| {
-                    let list_chars = get_characters_in_city(cityid, &states);
-                    for &CharacterID(id) in list_chars.iter() {
-                        chars_found.push(id);
-                    }
-
-                    list_chars
-                })
-                .collect();
-            // any character that isnt found is on the start city
-            let first_city_pop: Vec<CharacterID> = (0..self.city_id_counter)
-                .filter(|number| !chars_found.contains(number))
-                .map(|id_num| CharacterID(id_num))
-                .collect();
-            city_populations[self.city_id_counter - 1] = first_city_pop;
             time += 1;
         }
         println!("Finished generating events");
