@@ -203,7 +203,7 @@ impl World {
             return chars_in_city;
         }
 
-        // start running history
+        // set up values for history
         let mut rng = thread_rng();
         let mut time = 0;
         // all chars start at the first city (for now)
@@ -213,9 +213,11 @@ impl World {
             .keys()
             .map(|&char_id| char_id)
             .collect::<Vec<CharacterID>>();
+
+        // start running history
         while time < MAX_TIME {
-            // determine next events for each character
             for state in states.iter_mut() {
+                // determine next events for each character
                 let next_event = &LIST_EVENTS[state.event_probability_map.sample(&mut rng)];
 
                 // carry out event
@@ -316,6 +318,7 @@ impl World {
                         );
 
                         // reduce probability of meeting after this to 0
+                        // (until character moves to a new city)
                         let new_weights = [(2, &0)];
                         let update_result =
                             state.event_probability_map.update_weights(&new_weights);
@@ -331,7 +334,7 @@ impl World {
                 }
             }
 
-            // recalculate city populations to use in the next if required
+            // recalculate city populations to use in the next loop if required
             let mut chars_found = Vec::new();
             let mut city_populations: Vec<Vec<CharacterID>> = self
                 .cities
