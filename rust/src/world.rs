@@ -16,6 +16,9 @@ pub struct EventID(pub usize);
 pub struct CharacterID(pub usize);
 
 #[derive(Eq, Hash, PartialEq, Copy, Clone, Debug)]
+pub struct ItemID(pub usize);
+
+#[derive(Eq, Hash, PartialEq, Copy, Clone, Debug)]
 pub struct Year(isize);
 
 // -- Constants --
@@ -42,6 +45,7 @@ pub struct CharacterState {
     character: CharacterID,
     city: CityID,
     event_probability_map: WeightedIndex<usize>,
+    items: Vec<ItemID>,
     dead: bool,
 }
 
@@ -147,9 +151,11 @@ pub struct World {
     pub cities: HashMap<CityID, City>,
     pub characters: HashMap<CharacterID, Character>,
     pub events: HashMap<EventID, Event>,
+    pub items: HashMap<ItemID, Item>,
     city_id_counter: usize,
     pub event_id_counter: usize,
     character_id_counter: usize,
+    item_id_counter: usize,
     pub layers: [Vec<CityID>; NUM_LAYERS],
 }
 
@@ -159,9 +165,11 @@ impl World {
             cities: HashMap::new(),
             characters: HashMap::new(),
             events: HashMap::new(),
+            items: HashMap::new(),
             city_id_counter: 0,
-            event_id_counter: 0,
             character_id_counter: 0,
+            event_id_counter: 0,
+            item_id_counter: 0,
             layers: Default::default(),
         }
     }
@@ -276,6 +284,34 @@ impl World {
         self.events.insert(event_id, event);
 
         event_id
+    }
+    
+    fn add_item(
+        &mut self,
+        item_type: ItemType,
+        time: usize,
+        initial_owner: CharacterID,
+        initial_location: CityID
+    ) -> (EventID, ItemID) {
+        let item_id = ItemID(self.item_id_counter);
+        self.item_id_counter += 1;
+        
+        let creation_event = self.add_event(
+            vec![initial_owner],
+            time,
+            None,
+            EventType::EventCreation(item_id),
+            initial_location,
+            format!(
+                "Character #{:?} created Item #{:?} in City #{:?}",
+                initial_owner, item_id, initial_location
+            ),
+        );
+        
+        let mut item = Item::new(item_type, time, initial_owner, initial_location, creation_event);
+        self.items.insert(item_id, item);
+        
+        (creation_event, item_id)
     }
 
     fn event_move(
@@ -419,6 +455,7 @@ impl World {
             states.push(CharacterState {
                 character: CharacterID(char_id),
                 city: self.layers[0][0], // start city
+                items: Vec::new(), // starting inventory is empty
                 event_probability_map,
                 dead: false,
             });
@@ -491,6 +528,7 @@ impl World {
                     EventType::EventEncounter => {
                         self.event_encounter(time, state, &mut rng, &city_populations);
                     }
+                    _ => (),
                 }
                 // recalculate city populations before next character acts
                 recalculate_city_populations(
@@ -572,9 +610,10 @@ impl Character {
 // event types (the float is used for probability)
 #[derive(Debug)]
 pub enum EventType {
-    EventMove,      // an event representin moving from one city to another
+    EventMove,      // an event representing moving from one city to another
     EventDeath,     // an event representing the death of a character.
-    EventEncounter, // an event representing a fleeting encounter between two people. An alive character could encounter a dead character.
+    EventEncounter, // an event representing a fleeting encounter between two people. An alive character could encounter a dead character. during an encounter, there is a chance for an event to change hands
+    EventCreation(ItemID), // an event representing the creating of an item
     EventIdle, // an event representing doing nothing. this event should not be logged in event lists
                // EventMoveTogether, // an event representing two characters moving together for a while.
                // add more!
@@ -645,5 +684,83 @@ impl Event {
                 EventID(id) => panic!("No event found associated with eventID {}", id),
             },
         }
+    }
+}
+
+// the types of items
+pub enum ItemType {
+    Tableware
+}
+
+// tracks a single move 
+pub struct ItemMoveRecord { 
+    time: usize,
+    new_owner: Option<CharacterID>,
+    new_location: Option<CityID>,
+    event: Option<EventID>
+}
+
+impl ItemMoveRecord {
+    pub fn expect_owner(&self) -> CharacterID {
+        self.new_owner.expect("Record was expected to have an associated owner")
+    }
+    pub fn expect_location(&self) -> CityID {
+        self.new_location.expect("Record was expected to have an associated location")
+    }
+    pub fn expect_event(&self) -> EventID {
+        self.event.expect("Record was expected to have an associated event")
+    }
+}
+
+pub struct Item {
+    item_type: ItemType,
+    owner_records: Vec<ItemMoveRecord>,
+}
+
+impl Item {
+    // creates a new item, at time t, with initial owner (creator) and initial location, 
+    pub fn new(
+        item_type: ItemType,
+        time: usize,
+        initial_owner: CharacterID,
+        initial_location: CityID,
+        creation_event: EventID
+    ) -> Self {
+        Item {
+            item_type: item_type,
+            owner_records: vec![ItemMoveRecord {
+                time: 0,
+                new_owner: Some(initial_owner),
+                new_location: Some(initial_location),
+                event: Some(creation_event)
+            }]
+        }
+    }
+    
+    pub fn get_status_at_time(&self, time: usize) -> ItemMoveRecord {
+        let mut status = ItemMoveRecord {
+            time: time,
+            new_owner: None,
+            new_location: None,
+            event: None
+        };
+        
+        for record in self.owner_records.iter() {
+            if record.time > time {
+                break;
+            }
+            
+            match record.new_owner {
+                Some(x) => status.new_owner = Some(x),
+                _ => (),
+            }
+            
+            match record.new_location {
+                Some(x) => status.new_location = Some(x),
+                _ => (),
+            }
+        };
+        
+        status
     }
 }
