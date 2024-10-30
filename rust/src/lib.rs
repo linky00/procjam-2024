@@ -54,5 +54,18 @@ mod tests {
                 println!("event #{:?}: {:?},", event_id, event.summary);
             }
         }
+        for (item_id, item) in world.items {
+            println!("-------------------------");
+            println!("Item #{:?}'s events:", item_id);
+            for record in item.owner_records {
+                match record.event {
+                    Some(event_id) => {
+                        let &ref event = world.events.get(&event_id).unwrap();
+                        println!("event #{:?}: {:?},", event_id, event.summary);
+                    }
+                    _ => ()
+                }
+            }
+        }
     }
 }

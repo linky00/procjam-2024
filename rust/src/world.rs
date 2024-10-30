@@ -29,6 +29,8 @@ const MIN_CITIES_IN_LAYER: usize = 1;
 const MAX_CITIES_IN_LAYER: usize = 2;
 const NUM_CHARACTERS: usize = 6;
 const NUM_EVENTS: usize = 4; // number of event types
+const NUM_ITEMS: usize = 3;
+
 const CALAMITY_FREQ: usize = 1; // the frequency with which the calamity advances to the next layer
 const CALAMITY_DEADLINESS: usize = 2; // calamity's kill probability increases with respect to this every time step
 const LIST_EVENTS: [EventType; NUM_EVENTS] = [
@@ -225,7 +227,7 @@ impl World {
             };
             world.add_character("test".to_string(), pns);
         }
-
+        
         world
     }
 
@@ -359,9 +361,9 @@ impl World {
                 state.event_probability_map = WeightedIndex::new([0, 0, 0, 1]).unwrap();
             }
         }
-
+        
         // add event to character's events
-        self.add_event(
+        let event_id = self.add_event(
             vec![state.character],
             time,
             None,
@@ -372,6 +374,17 @@ impl World {
                 state.character, next_city
             ),
         );
+
+        // if the character had items, those items move with the character
+        for item_index in 0..state.items.len() {
+            let item_id = &mut state.items[item_index];
+            self.items.get_mut(item_id).unwrap().owner_records.push(ItemMoveRecord {
+                time: time,
+                new_owner: Some(state.character),
+                new_location: Some(next_city),
+                event: Some(event_id)
+            });
+        }
     }
 
     fn event_death(&mut self, time: usize, state: &mut CharacterState) {
@@ -441,7 +454,7 @@ impl World {
     // run generate_world before running this or perish in the doomed worldless narrative that you've created
     pub fn generate_events(&mut self) {
         println!("---- Event Generation ----");
-
+        
         // set up initial states for each character
         let mut states = Vec::new(); // in order of character id
         for char_id in 0..NUM_CHARACTERS {
@@ -461,6 +474,24 @@ impl World {
             });
         }
 
+        println!("Generating items...");
+        // add items
+        for _ in (0..NUM_ITEMS) {
+            let creator_id = self.characters.keys().choose(&mut rand::thread_rng()).unwrap().clone();
+            let start_city = self.layers[0][0];
+            
+            let (item_creation, item) = self.add_item(ItemType::Tableware, 0 , creator_id, start_city);
+            
+            self.characters.get_mut(&creator_id).unwrap().events.push(item_creation);
+            
+            for state_index in 0..states.len() {
+                let state = &mut states[state_index];
+                if state.character == creator_id {
+                    state.items.push(item);
+                }
+            }
+        }
+        
         // helper sub function to get characters in a city
         fn get_characters_in_city(city: CityID, states: &Vec<CharacterState>) -> Vec<CharacterID> {
             let mut chars_in_city = Vec::new();
@@ -566,11 +597,12 @@ impl City {
     }
     pub fn name_gen() -> String {
         let mut first_syllable = "".to_string();
-
-        first_syllable.push_str(HARDLETTERS.choose(&mut rand::thread_rng()).expect(""));
-        first_syllable.push_str(VOWELS.choose(&mut rand::thread_rng()).expect(""));
-        first_syllable.push_str(SOFTLETTERS.choose(&mut rand::thread_rng()).expect(""));
-        first_syllable.push_str(SUFFIXES.choose(&mut rand::thread_rng()).expect(""));
+        let mut rng = rand::thread_rng();
+        
+        first_syllable.push_str(HARDLETTERS.choose(&mut rng).expect(""));
+        first_syllable.push_str(VOWELS.choose(&mut rng).expect(""));
+        first_syllable.push_str(SOFTLETTERS.choose(&mut rng).expect(""));
+        first_syllable.push_str(SUFFIXES.choose(&mut rng).expect(""));
 
         first_syllable
     }
@@ -694,10 +726,10 @@ pub enum ItemType {
 
 // tracks a single move 
 pub struct ItemMoveRecord { 
-    time: usize,
-    new_owner: Option<CharacterID>,
-    new_location: Option<CityID>,
-    event: Option<EventID>
+    pub time: usize,
+    pub new_owner: Option<CharacterID>,
+    pub new_location: Option<CityID>,
+    pub event: Option<EventID>
 }
 
 impl ItemMoveRecord {
@@ -713,8 +745,8 @@ impl ItemMoveRecord {
 }
 
 pub struct Item {
-    item_type: ItemType,
-    owner_records: Vec<ItemMoveRecord>,
+    pub item_type: ItemType,
+    pub owner_records: Vec<ItemMoveRecord>,
 }
 
 impl Item {
