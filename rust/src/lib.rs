@@ -42,10 +42,14 @@ mod tests {
         let mut world = world::World::generate_world();
         world.generate_events();
         println!("\nEvent Display:");
+        for event_id in 0..world.event_id_counter {
+            let &ref event = world.events.get(&world::EventID(event_id)).unwrap();
+            println!("event {:?}: {:?}", event_id, event.summary);
+        }
         for (character_id, character) in world.characters {
             println!("-------------------------");
             println!("Character #{:?}'s events:", character_id);
-            for (event_id) in character.events {
+            for event_id in character.events {
                 let &ref event = world.events.get(&event_id).unwrap();
                 println!("event #{:?}: {:?},", event_id, event.summary);
             }

@@ -1,4 +1,3 @@
-use core::num;
 use rand::distributions::WeightedIndex;
 use rand::prelude::Distribution;
 use rand::rngs::ThreadRng;
@@ -21,12 +20,14 @@ pub struct Year(isize);
 
 // -- Constants --
 
-const MAX_TIME: usize = 10;
+const MAX_TIME: usize = 9;
 const NUM_LAYERS: usize = 5;
 const MIN_CITIES_IN_LAYER: usize = 1;
 const MAX_CITIES_IN_LAYER: usize = 2;
 const NUM_CHARACTERS: usize = 6;
-const NUM_EVENTS: usize = 4;
+const NUM_EVENTS: usize = 4; // number of event types
+const CALAMITY_FREQ: usize = 1; // the frequency with which the calamity advances to the next layer
+const CALAMITY_DEADLINESS: usize = 2; // calamity's kill probability increases with respect to this every time step
 const LIST_EVENTS: [EventType; NUM_EVENTS] = [
     EventType::EventMove,
     EventType::EventDeath,
@@ -36,20 +37,120 @@ const LIST_EVENTS: [EventType; NUM_EVENTS] = [
 
 // -- World and world gen --
 
+// the state of a character at some given time
+pub struct CharacterState {
+    character: CharacterID,
+    city: CityID,
+    event_probability_map: WeightedIndex<usize>,
+    dead: bool,
+}
+
+// the state of the calamity
+pub struct CalamityState {
+    pub city_states: HashMap<CityID, usize>, // how long each city has been "in calamity"
+    pub freq: usize, // the frequency with which the calamity moves (once every freq time units)
+    pub calamity_layer_i: Option<usize>, // which layer the calamity is currently at
+}
+
+impl CalamityState {
+    pub fn new(cities: Vec<&CityID>) -> Self {
+        let mut state = CalamityState {
+            city_states: HashMap::new(),
+            freq: CALAMITY_FREQ,
+            calamity_layer_i: None,
+        };
+
+        for &city in cities {
+            state.city_states.insert(city, 0);
+        }
+
+        state
+    }
+
+    pub fn calamity_step(
+        &mut self,
+        time: usize,
+        layers: &Vec<Vec<CityID>>,
+        character_states: &mut Vec<CharacterState>,
+        city_populations: &HashMap<CityID, Vec<CharacterID>>,
+    ) {
+        if time % self.freq == 0 && time != 0 {
+            // increase layer of calamity, if calamity isnt present yet, put it on layer 0
+            match self.calamity_layer_i {
+                Some(lyr) => {
+                    if lyr < NUM_LAYERS - 1 {
+                        self.calamity_layer_i = Some(lyr + 1);
+                    }
+                }
+                None => {
+                    self.calamity_layer_i = Some(0);
+                }
+            }
+        }
+
+        // increase calamity time of each city in calamity
+        match self.calamity_layer_i {
+            Some(calamity_layer_i_num) => {
+                for layer_i in 0..=calamity_layer_i_num {
+                    let layer = &layers[layer_i];
+                    for &city_id in layer {
+                        let prev_city_state = self.city_states.get(&city_id).unwrap();
+                        self.city_states.insert(city_id, prev_city_state + 1);
+                    }
+                }
+            }
+            None => (),
+        }
+
+        // update death probabilities of each character in calamity
+        match self.calamity_layer_i {
+            Some(calamity_layer_i_num) => {
+                for layer_i in 0..=calamity_layer_i_num {
+                    let layer = &layers[layer_i];
+                    for &city_id in layer {
+                        let city_population = city_populations.get(&city_id).unwrap();
+                        let &city_state = self.city_states.get(&city_id).unwrap();
+                        for &CharacterID(id) in city_population {
+                            let char_state = &character_states[id];
+                            // dont update states if character is already dead
+                            if !char_state.dead {
+                                let last_city_id: usize = 0;
+                                let curr_city_id_num = match city_id {
+                                    CityID(id) => id,
+                                };
+                                let new_move_prob = if curr_city_id_num == last_city_id {
+                                    0
+                                } else {
+                                    city_population.len() / 4 + city_state * CALAMITY_DEADLINESS
+                                };
+                                let new_death_prob = city_state * CALAMITY_DEADLINESS;
+                                println!("next death prob for char {:?}: {:?}", id, new_death_prob);
+                                let weight_update = [(0, &new_move_prob), (1, &new_death_prob)];
+                                let update_result = character_states[id]
+                                    .event_probability_map
+                                    .update_weights(&weight_update);
+                                match update_result {
+                                    Ok(_) => (),
+                                    Err(_) => println!("\t\t\tERR: Could not change character {:?}'s death probability", CharacterID(id))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            None => (),
+        }
+    }
+}
+
 pub struct World {
     pub cities: HashMap<CityID, City>,
     pub characters: HashMap<CharacterID, Character>,
     pub events: HashMap<EventID, Event>,
     city_id_counter: usize,
-    event_id_counter: usize,
+    pub event_id_counter: usize,
     character_id_counter: usize,
     pub layers: [Vec<CityID>; NUM_LAYERS],
-}
-
-pub struct CharacterState {
-    character: CharacterID,
-    city: CityID,
-    event_probability_map: WeightedIndex<usize>,
 }
 
 impl World {
@@ -61,7 +162,7 @@ impl World {
             city_id_counter: 0,
             event_id_counter: 0,
             character_id_counter: 0,
-            layers: [Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+            layers: Default::default(),
         }
     }
 
@@ -133,7 +234,7 @@ impl World {
     }
 
     fn connect_cities(&mut self, id1: &CityID, id2: &CityID) {
-        let mut city1 = self.cities.get_mut(id1).unwrap();
+        let city1 = self.cities.get_mut(id1).unwrap();
         city1.neighbours.push(*id2);
 
         //let mut city2 = self.cities.get_mut(id2).unwrap();
@@ -183,6 +284,7 @@ impl World {
         state: &mut CharacterState,
         rng: &mut ThreadRng,
         city_populations: &HashMap<CityID, Vec<CharacterID>>,
+        city_calamity_states: &HashMap<CityID, usize>,
     ) {
         // determine city to move to
         let curr_city = self.cities.get(&state.city).unwrap();
@@ -194,18 +296,25 @@ impl World {
         // recalculate probability map
         let population = city_populations.get(&next_city).unwrap().len();
         // if the character moves to the last city, set probability of moving again to zero.
-        // otherwise, the probability is proportional to half the population of the city.
+        // otherwise, the probability is proportional to half the population of the city plus the city's calamity state.
         let next_city_id_num: usize = match next_city {
             CityID(id) => id,
         };
         let last_city_id: usize = 0;
-        let new_prob = if next_city_id_num == last_city_id {
+        let next_city_calamity_state = city_calamity_states.get(&next_city).unwrap();
+        let new_move_prob = if next_city_id_num == last_city_id {
             0
         } else {
-            population / 2
+            population / 4 + next_city_calamity_state * CALAMITY_DEADLINESS
         };
-        // update move and encounter probabilities to the new city's context
-        let weight_updates = [(0, &new_prob), (2, &(population / 2))];
+        let new_death_prob = next_city_calamity_state * CALAMITY_DEADLINESS;
+        // update probabilities to the new city's context
+
+        let weight_updates = [
+            (0, &new_move_prob),
+            (1, &new_death_prob),
+            (2, &(population.pow(2))),
+        ];
         let update_result = state.event_probability_map.update_weights(&weight_updates);
         match update_result {
             Ok(_) => (),
@@ -231,6 +340,7 @@ impl World {
 
     fn event_death(&mut self, time: usize, state: &mut CharacterState) {
         // set all probabilities to zero except EventIdle
+        state.dead = true;
         state.event_probability_map = WeightedIndex::new(&[0, 0, 0, 1]).unwrap();
 
         // add death event
@@ -255,10 +365,6 @@ impl World {
         city_populations: &HashMap<CityID, Vec<CharacterID>>,
     ) {
         // pick random person from city to encounter
-        let city_id: usize = match state.city {
-            CityID(id) => id,
-        };
-
         let city_population = city_populations.get(&state.city).unwrap();
         let &encountered = city_population
             .iter()
@@ -295,7 +401,6 @@ impl World {
     // generates events chronologically and places them in the event lists of cities and characters.
     // a character only visits a city once and only encounters at most one other character in a city
     // run generate_world before running this or perish in the doomed worldless narrative that you've created
-    // TODO: clean this up and tweak values to get more interesting history!
     pub fn generate_events(&mut self) {
         println!("---- Event Generation ----");
 
@@ -303,16 +408,17 @@ impl World {
         let mut states = Vec::new(); // in order of character id
         for char_id in 0..NUM_CHARACTERS {
             let starting_weights: [usize; NUM_EVENTS] = [
-                cmp::max(NUM_CHARACTERS / 2, 1), // EventMove (this is a heuristic, we could change it)
+                cmp::max(NUM_CHARACTERS / 2, 1), // EventMove
                 0,                               // EventDeath
-                cmp::max(NUM_CHARACTERS / 2, 1), // EventEncounter (keep this proportional to the number of other characters in the same city)
-                0,                               // EventIdle
+                NUM_CHARACTERS, // EventEncounter (keep this proportional to the number of other characters in the same city)
+                1,              // EventIdle
             ];
             let event_probability_map = WeightedIndex::new(&starting_weights).unwrap();
             states.push(CharacterState {
                 character: CharacterID(char_id),
                 city: self.layers[0][0], // start city
                 event_probability_map,
+                dead: false,
             });
         }
 
@@ -342,12 +448,24 @@ impl World {
         // set up values for history
         let mut rng = thread_rng();
         let mut time = 0;
+        let mut calamity_state = CalamityState::new(self.cities.keys().collect());
         // set initial city populations
         let mut city_populations: HashMap<CityID, Vec<CharacterID>> = HashMap::new();
         recalculate_city_populations(self.cities.keys().collect(), &mut city_populations, &states);
 
+        println!("Generating events...");
         // start running history
         while time <= MAX_TIME {
+            println!("time: {:?}", time);
+            // step calamity movement
+            calamity_state.calamity_step(
+                time,
+                &self.layers.to_vec(),
+                &mut states,
+                &city_populations,
+            );
+
+            // update each character's state
             for state_index in 0..states.len() {
                 // determine next events for each character
                 let state = &mut states[state_index];
@@ -357,7 +475,13 @@ impl World {
                 match next_event {
                     EventType::EventIdle => (), // do nothing (event idle is not logged)
                     EventType::EventMove => {
-                        self.event_move(time, state, &mut rng, &city_populations);
+                        self.event_move(
+                            time,
+                            state,
+                            &mut rng,
+                            &city_populations,
+                            &calamity_state.city_states,
+                        );
                     }
                     EventType::EventDeath => {
                         self.event_death(time, state);
@@ -375,7 +499,7 @@ impl World {
             }
             time += 1;
         }
-        println!("Finished generating events");
+        println!("Generated {:?} events", self.event_id_counter);
     }
 }
 
@@ -449,9 +573,9 @@ pub enum EventType {
     EventMove,      // an event representin moving from one city to another
     EventDeath,     // an event representing the death of a character.
     EventEncounter, // an event representing a fleeting encounter between two people. An alive character could encounter a dead character.
-    EventIdle,
-    // EventMoveTogether, // an event representing two characters moving together for a while.
-    // add more!
+    EventIdle, // an event representing doing nothing. this event should not be logged in event lists
+               // EventMoveTogether, // an event representing two characters moving together for a while.
+               // add more!
 }
 
 // An event that has a start time and maybe an end time.
