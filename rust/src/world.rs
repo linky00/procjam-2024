@@ -396,6 +396,8 @@ impl World {
                 state.event_probability_map = WeightedIndex::new([0, 0, 0, 1]).unwrap();
             }
         }
+
+        // to do - reduce probability of meeting to 0 for the encountered character as well
     }
 
     // generates events chronologically and places them in the event lists of cities and characters.
