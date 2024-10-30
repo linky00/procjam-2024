@@ -533,8 +533,8 @@ impl City {
 
 // -- Character class and associated classes
 
-const NAME_HARDLETTERS: &'static [&'static str] = &["p", "b", "t", "f", "ch", "t", "k"];
-const NAME_VOWELS: &'static [&'static str] = &["a", "e", "ae", "ea", "oi", "ai", "u"];
+const NAME_HARDLETTERS: &'static [&'static str] = &["p", "b", "t", "ch", "t", "k"];
+const NAME_VOWELS: &'static [&'static str] = &["a", "e", "ae", "io", "ai", "u"];
 const NAME_SOFTLETTERS: &'static [&'static str] = &["th", "nn", "ni", "sh"];
 
 #[derive(Debug)]
