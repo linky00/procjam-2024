@@ -76,22 +76,22 @@ struct ItemData {
     #[var]
     item_type: GString,
     #[var]
-    item_description: Array<GString>,
+    description: Array<GString>,
     #[var]
-    item_stories: Array<Gd<ItemStory>>,
+    stories: Array<Gd<ItemStory>>,
 }
 
 #[godot_api]
 impl ItemData {
     fn new(
         item_type: GString,
-        item_description: Array<GString>,
-        item_stories: Array<Gd<ItemStory>>,
+        description: Array<GString>,
+        stories: Array<Gd<ItemStory>>,
     ) -> Gd<Self> {
         Gd::from_object(Self {
             item_type,
-            item_description,
-            item_stories,
+            description,
+            stories,
         })
     }
 }
