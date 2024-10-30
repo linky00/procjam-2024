@@ -210,12 +210,7 @@ impl World {
 
         // add characters
         for _ in (0..NUM_CHARACTERS) {
-            let pns = Pronouns {
-                nominative: "pn1".to_string(),
-                accusative: "pn2".to_string(),
-                dep_genitive: "pn3".to_string(),
-            };
-            world.add_character("test".to_string(), pns);
+            world.add_character();
         }
 
         world
@@ -241,10 +236,10 @@ impl World {
         // city2.neighbours.push(*id1);
     }
 
-    fn add_character(&mut self, name: String, pronouns: Pronouns) -> CharacterID {
+    fn add_character(&mut self) -> CharacterID {
         let id = self.character_id_counter;
         self.character_id_counter += 1;
-        let char = Character::new(name, pronouns);
+        let char = Character::new();
         self.characters.insert(CharacterID(id), char);
         CharacterID(id)
     }
@@ -396,8 +391,6 @@ impl World {
                 state.event_probability_map = WeightedIndex::new([0, 0, 0, 1]).unwrap();
             }
         }
-
-        // to do - reduce probability of meeting to 0 for the encountered character as well
     }
 
     // generates events chronologically and places them in the event lists of cities and characters.
@@ -540,6 +533,10 @@ impl City {
 
 // -- Character class and associated classes
 
+const NAME_HARDLETTERS: &'static [&'static str] = &["p", "b", "t", "f", "ch", "t", "k"];
+const NAME_VOWELS: &'static [&'static str] = &["a", "e", "ae", "ea", "oi", "ai", "u"];
+const NAME_SOFTLETTERS: &'static [&'static str] = &["th", "nn", "ni", "sh"];
+
 #[derive(Debug)]
 pub struct Character {
     // used in textgen
@@ -557,11 +554,37 @@ pub struct Pronouns {
                             // could add more if needed
 }
 
+const PRONOUNS: &'static [&'static [&'static str]] = &[
+    &["she", "her", "her"],
+    &["him", "him", "his"],
+    &["they", "them", "their"],
+];
+
 impl Character {
-    pub fn new(name: String, pronouns: Pronouns) -> Self {
+    fn name_gen() -> String {
+        let mut first_syllable = "".to_string();
+        let mut rng = rand::thread_rng();
+        first_syllable.push_str(NAME_HARDLETTERS.choose(&mut rng).expect(""));
+        first_syllable.push_str(NAME_VOWELS.choose(&mut rng).expect(""));
+        first_syllable.push_str(NAME_SOFTLETTERS.choose(&mut rng).expect(""));
+        first_syllable.push_str(NAME_VOWELS.choose(&mut rng).expect(""));
+
+        first_syllable
+    }
+
+    fn pronoun_gen() -> Pronouns {
+        let mut rng = rand::thread_rng();
+        Pronouns {
+            nominative: PRONOUNS[0].choose(&mut rng).unwrap().to_string(),
+            accusative: PRONOUNS[0].choose(&mut rng).unwrap().to_string(),
+            dep_genitive: PRONOUNS[0].choose(&mut rng).unwrap().to_string(),
+        }
+    }
+
+    pub fn new() -> Self {
         Character {
-            name: name,
-            pronouns: pronouns,
+            name: Self::name_gen(),
+            pronouns: Self::pronoun_gen(),
             events: Vec::new(),
         }
     }
