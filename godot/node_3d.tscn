@@ -1,0 +1,206 @@
+[gd_scene load_steps=22 format=3 uid="uid://dda5iklgsttrf"]
+
+[ext_resource type="PackedScene" uid="uid://ckh4uwsilgx02" path="res://objects/room.glb" id="1_40iyh"]
+[ext_resource type="Material" uid="uid://citkraavg2e6i" path="res://emissiv.tres" id="2_7y386"]
+[ext_resource type="Texture2D" uid="uid://dxrod5o0asbom" path="res://objects/room_Substance_graph_basecolor.png" id="3_srg06"]
+[ext_resource type="PackedScene" uid="uid://b3xwqflhcoqfp" path="res://objects/other objects/carpet.glb" id="6_ff6pc"]
+[ext_resource type="PackedScene" uid="uid://ce8vqntyd3a1r" path="res://objects/other objects/carpet3.glb" id="7_jacdk"]
+[ext_resource type="PackedScene" uid="uid://braf046yu0b3c" path="res://objects/other objects/carpet2.glb" id="8_wit5f"]
+[ext_resource type="PackedScene" uid="uid://dayi3hn1muyvm" path="res://objects/other objects/bulb.glb" id="9_sj0ot"]
+[ext_resource type="Material" uid="uid://cup3becm77lkb" path="res://wod.tres" id="10_7jaah"]
+[ext_resource type="ArrayMesh" uid="uid://dxrt6a3ikyi2w" path="res://objects/furniture/drawer.obj" id="11_qxee8"]
+[ext_resource type="Texture2D" uid="uid://b572l4r1kip1j" path="res://textures/wod2/Substance_graph_basecolor.png" id="12_1si7d"]
+[ext_resource type="Material" uid="uid://d0w4v6fbw0shn" path="res://wod2.tres" id="12_gb7ga"]
+[ext_resource type="ArrayMesh" uid="uid://cm3mrtjf30w32" path="res://objects/tbl/table2.obj" id="13_76cee"]
+[ext_resource type="ArrayMesh" uid="uid://b0yskx5sqotn1" path="res://objects/tbl/table.obj" id="13_y7kuv"]
+[ext_resource type="ArrayMesh" uid="uid://cb4q150ilk5c" path="res://objects/furniture/drawer2.obj" id="14_lv11o"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_fot1n"]
+
+[sub_resource type="Environment" id="Environment_8lmqs"]
+glow_enabled = true
+glow_strength = 0.53
+fog_enabled = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_lxl6s"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pv0es"]
+transparency = 1
+blend_mode = 3
+albedo_color = Color(0.775063, 0.775063, 0.775063, 0.505882)
+
+[sub_resource type="BoxMesh" id="BoxMesh_e0wtu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cpjef"]
+albedo_texture = ExtResource("3_srg06")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_abpw7"]
+albedo_texture = ExtResource("12_1si7d")
+
+[node name="Node3D" type="Node3D"]
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(-0.568476, -1.35535e-07, -0.8227, -0.314887, 0.923853, 0.217583, 0.760054, 0.382748, -0.525188, -1.80008, 1.47672, -2.04442)
+light_energy = 4.879
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(0.999815, -0.0192323, 0, 0.0192323, 0.999815, 0, 0, 0, 1, -1.86877, 1.04868, 4.92239)
+light_energy = 0.354
+light_size = 0.731
+shadow_enabled = true
+
+[node name="room2" parent="." instance=ExtResource("1_40iyh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.92858, 0, 0.710095)
+
+[node name="window emissive" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0262935, 0, -0.00834036)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.642965, 0, 0, 0, 0.865006, 0, 0, 0, 0.118, -1.46761, 0.982754, 8.81279)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.642965, 0, 0, 0, 0.865006, 0, 0, 0, 0.118, -2.39408, 0.982754, 8.81279)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.642965, 0, 0, 0, 0.865006, 0, 0, 0, 0.118, -2.39408, 1.86679, 8.83102)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.642965, 0, 0, 0, 0.865006, 0, 0, 0, 0.118, -1.46386, 1.86679, 8.83102)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.490775, 0, 0.0762331, 0, 0.865006, 0, -0.415384, 0, 0.0900693, 0.523036, 1.0137, 7.73843)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.490775, 0, 0.0762331, 0, 0.865006, 0, -0.415384, 0, 0.0900693, -0.184139, 1.0137, 8.33697)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.490775, 0, 0.0762331, 0, 0.865006, 0, -0.415384, 0, 0.0900693, -0.172362, 1.89773, 8.35089)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D13" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(-2.81049e-08, 0, 0.118, 0, 0.865006, 0, -0.642965, 0, -5.15794e-09, 1.01287, 1.0137, 6.60086)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D14" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(-2.81049e-08, 0, 0.118, 0, 0.865006, 0, -0.642965, 0, -5.15794e-09, 1.03109, 1.89773, 6.60051)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D15" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(-2.81049e-08, 0, 0.118, 0, 0.865006, 0, -0.642965, 0, -5.15794e-09, -4.84596, 1.01785, 6.60792)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D16" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(-2.81049e-08, 0, 0.118, 0, 0.865006, 0, -0.642965, 0, -5.15794e-09, -4.86883, 1.90188, 6.60229)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.490775, 0, 0.0762331, 0, 0.865006, 0, -0.415384, 0, 0.0900693, 0.537675, 1.89773, 7.74992)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D9" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.493864, 0, -0.0755581, 0, 0.865006, 0, 0.411706, 0, 0.0906362, -3.62743, 0.973134, 8.37772)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D10" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.493864, 0, -0.0755581, 0, 0.865006, 0, 0.411706, 0, 0.0906362, -4.33905, 0.973134, 7.78448)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D11" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.493864, 0, -0.0755581, 0, 0.865006, 0, 0.411706, 0, 0.0906362, -4.35073, 1.85717, 7.79848)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D12" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.493864, 0, -0.0755581, 0, 0.865006, 0, 0.411706, 0, 0.0906362, -3.63622, 1.85717, 8.39412)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_8lmqs")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0506813, 0, 0, 0, 2.38363, 0, 0, 0, 2.11623, 0.904123, 0.997652, -2.4581)
+mesh = SubResource("BoxMesh_lxl6s")
+surface_material_override/0 = SubResource("StandardMaterial3D_pv0es")
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.90301, 1.9107, -2.48867)
+light_color = Color(1, 0.917647, 0.705882, 1)
+light_energy = 1.969
+light_size = 0.677
+shadow_enabled = true
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(4.20503, 0, 0, 0, 0.183462, 0, 0, 0, 12.7174, -1.92466, 4.45146, 0.175441)
+mesh = SubResource("BoxMesh_e0wtu")
+surface_material_override/0 = SubResource("StandardMaterial3D_cpjef")
+
+[node name="carpet" parent="." instance=ExtResource("6_ff6pc")]
+transform = Transform3D(0.986799, 0, 0.161948, 0, 1, 0, -0.161948, 0, 0.986799, -2.15891, 0.00431728, -1.91158)
+
+[node name="carpet3" parent="." instance=ExtResource("7_jacdk")]
+transform = Transform3D(0.125621, 0, 1.3227, 0, 1.3299, 0, -1.92381, 0, 0.08637, -1.17312, 0, 1.03985)
+
+[node name="carpet2" parent="." instance=ExtResource("8_wit5f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.09284, 0, 4.66031)
+
+[node name="bulb" parent="." instance=ExtResource("9_sj0ot")]
+transform = Transform3D(0.0718073, 0, 0, 0, 0.0718073, 0, 0, 0, 0.0718073, -1.91102, 1.91425, -2.49005)
+
+[node name="Drawer" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.202591, 0, 0, 0, 0.202591, 0, 0, 0, 0.202591, -4.47264, 0.693724, -0.667057)
+mesh = ExtResource("11_qxee8")
+surface_material_override/0 = ExtResource("12_gb7ga")
+surface_material_override/1 = SubResource("StandardMaterial3D_abpw7")
+
+[node name="Table" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.36417, 0, 0, 0, 1.36417, 0, 0, 0, 1.36417, -1.75576, -0.0978475, -3.99663)
+material_override = ExtResource("12_gb7ga")
+mesh = ExtResource("13_y7kuv")
+surface_material_override/0 = ExtResource("10_7jaah")
+
+[node name="Table2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.041213, 0, -0.99915, 0, 1, 0, 0.99915, 0, -0.041213, -3.47023, -0.00556123, -3.99281)
+mesh = ExtResource("13_76cee")
+surface_material_override/0 = ExtResource("10_7jaah")
+
+[node name="Drawer2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.00347792, 0, -0.278965, 0, 0.270387, 0, 0.270364, 0, 0.00358856, -3.31868, -0.015083, -6.53181)
+mesh = ExtResource("14_lv11o")
+surface_material_override/0 = ExtResource("10_7jaah")
