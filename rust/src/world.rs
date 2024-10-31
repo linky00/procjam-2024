@@ -27,10 +27,11 @@ const MAX_TIME: usize = 9;
 const NUM_LAYERS: usize = 5;
 const MIN_CITIES_IN_LAYER: usize = 1;
 const MAX_CITIES_IN_LAYER: usize = 2;
-const NUM_CHARACTERS: usize = 6;
+const NUM_CHARACTERS: usize = 6; // number of characters to generate
 const NUM_EVENTS: usize = 4; // number of event types
 const CALAMITY_FREQ: usize = 1; // the frequency with which the calamity advances to the next layer
 const CALAMITY_DEADLINESS: usize = 2; // calamity's kill probability increases with respect to this every time step
+const ENCOUNTER_POW: u32 = 2; // encounter chance is determined by the city population to the power of this constant
 const LIST_EVENTS: [EventType; NUM_EVENTS] = [
     EventType::EventMove,
     EventType::EventDeath,
@@ -280,17 +281,17 @@ impl World {
 
         event_id
     }
-    
+
     fn add_item(
         &mut self,
         item_type: ItemType,
         time: usize,
         initial_owner: CharacterID,
-        initial_location: CityID
+        initial_location: CityID,
     ) -> (EventID, ItemID) {
         let item_id = ItemID(self.item_id_counter);
         self.item_id_counter += 1;
-        
+
         let creation_event = self.add_event(
             vec![initial_owner],
             time,
@@ -302,10 +303,16 @@ impl World {
                 initial_owner, item_id, initial_location
             ),
         );
-        
-        let mut item = Item::new(item_type, time, initial_owner, initial_location, creation_event);
+
+        let mut item = Item::new(
+            item_type,
+            time,
+            initial_owner,
+            initial_location,
+            creation_event,
+        );
         self.items.insert(item_id, item);
-        
+
         (creation_event, item_id)
     }
 
@@ -344,7 +351,7 @@ impl World {
         let weight_updates = [
             (0, &new_move_prob),
             (1, &new_death_prob),
-            (2, &(population.pow(2))),
+            (2, &(population.pow(ENCOUNTER_POW))),
         ];
         let update_result = state.event_probability_map.update_weights(&weight_updates);
         match update_result {
@@ -448,7 +455,7 @@ impl World {
             states.push(CharacterState {
                 character: CharacterID(char_id),
                 city: self.layers[0][0], // start city
-                items: Vec::new(), // starting inventory is empty
+                items: Vec::new(),       // starting inventory is empty
                 event_probability_map,
                 dead: false,
             });
@@ -633,8 +640,8 @@ impl Character {
 // event types (the float is used for probability)
 #[derive(Debug)]
 pub enum EventType {
-    EventMove,      // an event representing moving from one city to another
-    EventDeath,     // an event representing the death of a character.
+    EventMove,             // an event representing moving from one city to another
+    EventDeath,            // an event representing the death of a character.
     EventEncounter, // an event representing a fleeting encounter between two people. An alive character could encounter a dead character. during an encounter, there is a chance for an event to change hands
     EventCreation(ItemID), // an event representing the creating of an item
     EventIdle, // an event representing doing nothing. this event should not be logged in event lists
@@ -712,26 +719,29 @@ impl Event {
 
 // the types of items
 pub enum ItemType {
-    Tableware
+    Tableware,
 }
 
-// tracks a single move 
-pub struct ItemMoveRecord { 
+// tracks a single move
+pub struct ItemMoveRecord {
     time: usize,
     new_owner: Option<CharacterID>,
     new_location: Option<CityID>,
-    event: Option<EventID>
+    event: Option<EventID>,
 }
 
 impl ItemMoveRecord {
     pub fn expect_owner(&self) -> CharacterID {
-        self.new_owner.expect("Record was expected to have an associated owner")
+        self.new_owner
+            .expect("Record was expected to have an associated owner")
     }
     pub fn expect_location(&self) -> CityID {
-        self.new_location.expect("Record was expected to have an associated location")
+        self.new_location
+            .expect("Record was expected to have an associated location")
     }
     pub fn expect_event(&self) -> EventID {
-        self.event.expect("Record was expected to have an associated event")
+        self.event
+            .expect("Record was expected to have an associated event")
     }
 }
 
@@ -741,13 +751,13 @@ pub struct Item {
 }
 
 impl Item {
-    // creates a new item, at time t, with initial owner (creator) and initial location, 
+    // creates a new item, at time t, with initial owner (creator) and initial location,
     pub fn new(
         item_type: ItemType,
         time: usize,
         initial_owner: CharacterID,
         initial_location: CityID,
-        creation_event: EventID
+        creation_event: EventID,
     ) -> Self {
         Item {
             item_type: item_type,
@@ -755,35 +765,35 @@ impl Item {
                 time: 0,
                 new_owner: Some(initial_owner),
                 new_location: Some(initial_location),
-                event: Some(creation_event)
-            }]
+                event: Some(creation_event),
+            }],
         }
     }
-    
+
     pub fn get_status_at_time(&self, time: usize) -> ItemMoveRecord {
         let mut status = ItemMoveRecord {
             time: time,
             new_owner: None,
             new_location: None,
-            event: None
+            event: None,
         };
-        
+
         for record in self.owner_records.iter() {
             if record.time > time {
                 break;
             }
-            
+
             match record.new_owner {
                 Some(x) => status.new_owner = Some(x),
                 _ => (),
             }
-            
+
             match record.new_location {
                 Some(x) => status.new_location = Some(x),
                 _ => (),
             }
-        };
-        
+        }
+
         status
     }
 }
