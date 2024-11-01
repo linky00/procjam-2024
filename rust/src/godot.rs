@@ -1,5 +1,35 @@
+use crate::world::*;
 use godot::classes::Node;
 use godot::prelude::*;
+
+const TEAPOT_DESCRIPTIONS: &'static [&'static str] = &["A teapot 1.", "A teapot 2.", "A teapot 3."];
+
+const VASE_DESCRIPTIONS: &'static [&'static str] = &["A vase 1.", "A vase 2.", "A vase 3."];
+
+const BRICABRAC_WEAR: &'static [&'static [&'static str]] = &[
+    &[
+        "It's cracked on {:?}.",
+        "The {:?}, having been worn down with time and wear, seem almost invisible.",
+        "You can hear something shaking around inside the {:?}.",
+        "You can see this once being a striking part of someone's {:?}.",
+    ],
+    &[
+        "the handle",
+        "ornamental colors",
+        "porcelain",
+        "kitchenware",
+    ],
+    &["the mouth", "embossings", "clay", "home decor"],
+];
+
+const ACCESORIES_WEAR: &'static[&'static[&'static str]] = &[
+    &[
+        "This was once an eye-catching statement, but time has only been as kind to it as its owners.",
+        "It has an odd smell.",
+        "Parts of it are... ash-y?"
+    ],
+    &[],
+];
 
 struct MyExtension;
 
@@ -9,6 +39,7 @@ unsafe impl ExtensionLibrary for MyExtension {}
 #[derive(GodotClass)]
 #[class(base=Node)]
 struct History {
+    world: World,
     generated: bool,
     items: Array<Gd<ItemData>>,
     base: Base<Node>,
@@ -18,6 +49,22 @@ struct History {
 impl History {
     #[func]
     fn generate_history(&mut self) {
+        // generate events
+        self.world.generate_events();
+
+        let world_items = &self.world.items;
+
+        let mut item_data_vec: Vec<ItemData> = Vec::new();
+        for (item_id, item) in world_items.into_iter() {
+            let item_data = ItemData::new(
+                "WIP".into(),
+                array![GString::from("")],
+                array![ItemStory::new(array![GString::from("")])],
+            );
+        }
+
+        self.items = array![]; // todo
+
         // replace this with actual history!
         self.items = array![ItemData::new(
             "shoe".into(),
@@ -63,6 +110,7 @@ impl History {
 impl INode for History {
     fn init(base: Base<Node>) -> Self {
         Self {
+            world: World::generate_world(),
             generated: false,
             items: array![],
             base,
