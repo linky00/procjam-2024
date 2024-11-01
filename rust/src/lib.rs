@@ -1,4 +1,5 @@
 pub mod world;
+pub mod godot;
 
 #[cfg(test)]
 mod tests {
