@@ -23,7 +23,7 @@ pub struct Year(isize);
 
 // -- Constants --
 
-const MAX_TIME: usize = 9;
+pub const MAX_TIME: usize = 9;
 const NUM_LAYERS: usize = 5;
 const MIN_CITIES_IN_LAYER: usize = 1;
 const MAX_CITIES_IN_LAYER: usize = 2;
@@ -42,7 +42,7 @@ const CALAMITY_FREQ: usize = 5; // the frequency with which the calamity advance
 const CALAMITY_DEADLINESS: usize = 2; // calamity's kill probability increases with respect to this every time step
 const ENCOUNTER_POW: u32 = 2; // encounter chance is determined by the city population to the power of this constant
 
-const PROB_ITEM_PASSED: f32 = 0.4;
+const PROB_ITEM_PASSED: f32 = 1.0;
 
 // -- World and world gen --
 
@@ -508,7 +508,7 @@ impl World {
     // run generate_world before running this or perish in the doomed worldless narrative that you've created
     pub fn generate_events(&mut self) {
         let mut rng = thread_rng();
-        
+
         println!("---- Event Generation ----");
 
         // set up initial states for each character
@@ -812,11 +812,11 @@ pub enum EventType {
 // An event that has a start time and maybe an end time.
 #[derive(Debug)]
 pub struct Event {
-    characters: Vec<CharacterID>, // characters in the event
-    start_time: usize,
-    end_time: Option<usize>,
-    event_type: EventType,
-    events_happening_during: Vec<EventID>,
+    pub characters: Vec<CharacterID>, // characters in the event
+    pub start_time: usize,
+    pub end_time: Option<usize>,
+    pub event_type: EventType,
+    pub events_happening_during: Vec<EventID>,
     pub summary: String,
 }
 
@@ -890,14 +890,14 @@ pub enum ItemType {
 
 impl std::fmt::Display for ItemType {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-       match self {
-           ItemType::Teapot1 => write!(f, "teapot1"),
-           ItemType::Teapot2 => write!(f, "teapot2"),
-           ItemType::Teapot3 => write!(f, "teapot3"),
-           ItemType::Vase1 => write!(f, "vase1"),
-           ItemType::Vase2 => write!(f, "vase2"),
-           ItemType::Vase3 => write!(f, "vase3"),
-       }
+        match self {
+            ItemType::Teapot1 => write!(f, "teapot1"),
+            ItemType::Teapot2 => write!(f, "teapot2"),
+            ItemType::Teapot3 => write!(f, "teapot3"),
+            ItemType::Vase1 => write!(f, "vase1"),
+            ItemType::Vase2 => write!(f, "vase2"),
+            ItemType::Vase3 => write!(f, "vase3"),
+        }
     }
 }
 
@@ -918,6 +918,7 @@ impl ItemType {
 }
 
 // tracks a single move
+#[derive(Debug)]
 pub struct ItemMoveRecord {
     pub time: usize,
     pub new_owner: Option<CharacterID>,

@@ -1,5 +1,5 @@
-pub mod world;
 pub mod godot;
+pub mod world;
 
 #[cfg(test)]
 mod tests {
@@ -57,8 +57,11 @@ mod tests {
         }
         for (item_id, item) in world.items {
             println!("-------------------------");
-            println!("Item #{:?} (of type {} {})'s events:", item_id, item.item_type);
-            
+            println!(
+                "Item #{:?} (of type {:?})'s events:",
+                item_id, item.item_type
+            );
+
             for record in item.owner_records {
                 match record.event {
                     Some(event_id) => {
@@ -76,5 +79,13 @@ mod tests {
         for _ in 0..2 {
             event_generator();
         }
+    }
+
+    #[test]
+    fn text_gen() {
+        let mut world = world::World::generate_world();
+        world.generate_events();
+        let test_item = world.items.get(&world::ItemID(0)).unwrap();
+        godot::generate_stories(&world, test_item);
     }
 }
