@@ -888,6 +888,19 @@ pub enum ItemType {
     Vase3,
 }
 
+impl std::fmt::Display for ItemType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+       match self {
+           ItemType::Teapot1 => write!(f, "teapot1"),
+           ItemType::Teapot2 => write!(f, "teapot2"),
+           ItemType::Teapot3 => write!(f, "teapot3"),
+           ItemType::Vase1 => write!(f, "vase1"),
+           ItemType::Vase2 => write!(f, "vase2"),
+           ItemType::Vase3 => write!(f, "vase3"),
+       }
+    }
+}
+
 const NUM_ITEM_TYPES: usize = 6; // number of item types
 const LIST_ITEM_TYPES: [ItemType; NUM_ITEM_TYPES] = [
     ItemType::Teapot1,

@@ -57,7 +57,7 @@ mod tests {
         }
         for (item_id, item) in world.items {
             println!("-------------------------");
-            println!("Item #{:?} (of type #{:?})'s events:", item_id, item.item_type);
+            println!("Item #{:?} (of type {} {})'s events:", item_id, item.item_type);
             
             for record in item.owner_records {
                 match record.event {
