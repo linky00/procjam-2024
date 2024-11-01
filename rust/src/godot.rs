@@ -54,16 +54,16 @@ impl History {
 
         let world_items = &self.world.items;
 
-        let mut item_data_vec: Vec<ItemData> = Vec::new();
+        let mut item_data_vec: Vec<Gd<ItemData>> = Vec::new();
         for (item_id, item) in world_items.into_iter() {
-            let item_data = ItemData::new(
+            item_data_vec.push(ItemData::new(
                 "WIP".into(),
                 array![GString::from("")],
                 array![ItemStory::new(array![GString::from("")])],
-            );
+            ));
         }
 
-        self.items = array![]; // todo
+        self.items = array![];
 
         // replace this with actual history!
         self.items = array![ItemData::new(
