@@ -426,13 +426,20 @@ impl World {
         state: &mut CharacterState,
         rng: &mut ThreadRng,
         city_populations: &HashMap<CityID, Vec<CharacterID>>,
-    ) -> EventID {
+    ) -> Result<EventID, ()> {
         // pick random person from city to encounter
         let city_population = city_populations.get(&state.city).unwrap();
-        let &encountered = city_population
+        
+        let potential_encounter = city_population
             .iter()
             .filter(|&&id| id != state.character)
-            .choose(rng)
+            .choose(rng);
+        
+        if potential_encounter.is_none() {
+            return Err(())
+        }
+        
+        let &encountered = potential_encounter
             .unwrap();
 
         // add encounter event
@@ -460,7 +467,7 @@ impl World {
             }
         }
   
-        encounter
+        Ok(encounter)
 
         // to do - reduce probability of meeting to 0 for the encountered character as well
     }
@@ -574,41 +581,44 @@ impl World {
                         // add the encounter event
                         let encounter_id = self.event_encounter(time, state, &mut rng, &city_populations);
                         
-                        // retrieve encountered character, and check if they had any items, have a chance to pass on items. this requires mutably borrowing from states, so we lose access to state
-                        let encountered_char_id = self.events
-                                .get(&encounter_id)
-                                .unwrap()
-                                .characters[1]
-                                .clone();
+                        if encounter_id.is_ok() {
+                            let encounter_id = encounter_id.unwrap();
+                            // retrieve encountered character, and check if they had any items, have a chance to pass on items. this requires mutably borrowing from states, so we lose access to state
+                            let encountered_char_id = self.events
+                                    .get(&encounter_id)
+                                    .unwrap()
+                                    .characters[1]
+                                    .clone();
 
-                        let encountered_char_index = states
-                                .iter()
-                                .position(|x| x.character == encountered_char_id)
-                                .unwrap();
-                        
-                        let encountered_char_state = &mut states[encountered_char_index];
+                            let encountered_char_index = states
+                                    .iter()
+                                    .position(|x| x.character == encountered_char_id)
+                                    .unwrap();
+                            
+                            let encountered_char_state = &mut states[encountered_char_index];
 
-                        let character_is_dead = encountered_char_state.dead;
-                            
-                        if (encountered_char_state.items.len() > 0) && ((rng.gen::<f32>() < PROB_ITEM_PASSED) || character_is_dead) {
-                            
-                            let item_id = encountered_char_state.items.choose(&mut rng).unwrap().clone();
-                            encountered_char_state.items.retain(|x| *x != item_id);
-                            
-                            // reborrow state 
-                            let state = &mut states[state_index];
-                            self.items
-                                .get_mut(&item_id)
-                                .unwrap()
-                                .owner_records
-                                .push(ItemMoveRecord {
-                                time: time,
-                                new_owner: Some(state.character),
-                                new_location: Some(state.city),
-                                event: Some(encounter_id)
-                            });
-                            
-                            state.items.push(item_id);
+                            let character_is_dead = encountered_char_state.dead;
+                                
+                            if (encountered_char_state.items.len() > 0) && ((rng.gen::<f32>() < PROB_ITEM_PASSED) || character_is_dead) {
+                                
+                                let item_id = encountered_char_state.items.choose(&mut rng).unwrap().clone();
+                                encountered_char_state.items.retain(|x| *x != item_id);
+                                
+                                // reborrow state 
+                                let state = &mut states[state_index];
+                                self.items
+                                    .get_mut(&item_id)
+                                    .unwrap()
+                                    .owner_records
+                                    .push(ItemMoveRecord {
+                                    time: time,
+                                    new_owner: Some(state.character),
+                                    new_location: Some(state.city),
+                                    event: Some(encounter_id)
+                                });
+                                
+                                state.items.push(item_id);
+                            }
                         }
                     }
                     _ => (),
