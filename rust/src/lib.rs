@@ -63,9 +63,16 @@ mod tests {
                         let &ref event = world.events.get(&event_id).unwrap();
                         println!("event #{:?}: {:?},", event_id, event.summary);
                     }
-                    _ => ()
+                    _ => (),
                 }
             }
+        }
+    }
+
+    #[test]
+    fn run_eventgen_alot() {
+        for _ in 0..100 {
+            event_generator();
         }
     }
 }
