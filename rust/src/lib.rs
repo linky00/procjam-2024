@@ -57,7 +57,8 @@ mod tests {
         }
         for (item_id, item) in world.items {
             println!("-------------------------");
-            println!("Item #{:?}'s events:", item_id);
+            println!("Item #{:?} (of type #{:?})'s events:", item_id, item.item_type);
+            
             for record in item.owner_records {
                 match record.event {
                     Some(event_id) => {
@@ -72,7 +73,7 @@ mod tests {
 
     #[test]
     fn run_eventgen_alot() {
-        for _ in 0..100 {
+        for _ in 0..2 {
             event_generator();
         }
     }

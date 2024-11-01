@@ -28,18 +28,19 @@ const NUM_LAYERS: usize = 5;
 const MIN_CITIES_IN_LAYER: usize = 1;
 const MAX_CITIES_IN_LAYER: usize = 2;
 const NUM_CHARACTERS: usize = 6; // number of characters to generate
-const NUM_EVENTS: usize = 4; // number of event types
 const NUM_ITEMS: usize = 3;
 
-const CALAMITY_FREQ: usize = 1; // the frequency with which the calamity advances to the next layer
-const CALAMITY_DEADLINESS: usize = 2; // calamity's kill probability increases with respect to this every time step
-const ENCOUNTER_POW: u32 = 2; // encounter chance is determined by the city population to the power of this constant
+const NUM_EVENTS: usize = 4; // number of event types
 const LIST_EVENTS: [EventType; NUM_EVENTS] = [
     EventType::EventMove,
     EventType::EventDeath,
     EventType::EventEncounter,
     EventType::EventIdle,
 ];
+
+const CALAMITY_FREQ: usize = 5; // the frequency with which the calamity advances to the next layer
+const CALAMITY_DEADLINESS: usize = 2; // calamity's kill probability increases with respect to this every time step
+const ENCOUNTER_POW: u32 = 2; // encounter chance is determined by the city population to the power of this constant
 
 const PROB_ITEM_PASSED: f32 = 0.4;
 
@@ -506,6 +507,8 @@ impl World {
     // a character only visits a city once and only encounters at most one other character in a city
     // run generate_world before running this or perish in the doomed worldless narrative that you've created
     pub fn generate_events(&mut self) {
+        let mut rng = thread_rng();
+        
         println!("---- Event Generation ----");
 
         // set up initial states for each character
@@ -539,7 +542,7 @@ impl World {
                 .clone();
             let start_city = self.layers[0][0];
 
-            let item = self.add_item(ItemType::Tableware, 0, creator_id, start_city);
+            let item = self.add_item(ItemType::new(&mut rng), 0, creator_id, start_city);
 
             for state_index in 0..states.len() {
                 let state = &mut states[state_index];
@@ -573,7 +576,6 @@ impl World {
         }
 
         // set up values for history
-        let mut rng = thread_rng();
         let mut time = 0;
         let mut calamity_state = CalamityState::new(self.cities.keys().collect());
         // set initial city populations
@@ -876,8 +878,30 @@ impl Event {
 }
 
 // the types of items
+#[derive(Eq, Hash, PartialEq, Copy, Clone, Debug)]
 pub enum ItemType {
-    Tableware,
+    Teapot1,
+    Teapot2,
+    Teapot3,
+    Vase1,
+    Vase2,
+    Vase3,
+}
+
+const NUM_ITEM_TYPES: usize = 6; // number of item types
+const LIST_ITEM_TYPES: [ItemType; NUM_ITEM_TYPES] = [
+    ItemType::Teapot1,
+    ItemType::Teapot2,
+    ItemType::Teapot3,
+    ItemType::Vase1,
+    ItemType::Vase2,
+    ItemType::Vase3,
+];
+
+impl ItemType {
+    pub fn new(rng: &mut ThreadRng) -> Self {
+        LIST_ITEM_TYPES.choose(rng).unwrap().clone()
+    }
 }
 
 // tracks a single move
