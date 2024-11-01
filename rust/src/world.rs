@@ -27,12 +27,13 @@ const MAX_TIME: usize = 9;
 const NUM_LAYERS: usize = 5;
 const MIN_CITIES_IN_LAYER: usize = 1;
 const MAX_CITIES_IN_LAYER: usize = 2;
-const NUM_CHARACTERS: usize = 6;
+const NUM_CHARACTERS: usize = 6; // number of characters to generate
 const NUM_EVENTS: usize = 4; // number of event types
 const NUM_ITEMS: usize = 3;
 
 const CALAMITY_FREQ: usize = 1; // the frequency with which the calamity advances to the next layer
 const CALAMITY_DEADLINESS: usize = 2; // calamity's kill probability increases with respect to this every time step
+const ENCOUNTER_POW: u32 = 2; // encounter chance is determined by the city population to the power of this constant
 const LIST_EVENTS: [EventType; NUM_EVENTS] = [
     EventType::EventMove,
     EventType::EventDeath,
@@ -222,12 +223,7 @@ impl World {
 
         // add characters
         for _ in (0..NUM_CHARACTERS) {
-            let pns = Pronouns {
-                nominative: "pn1".to_string(),
-                accusative: "pn2".to_string(),
-                dep_genitive: "pn3".to_string(),
-            };
-            world.add_character("test".to_string(), pns);
+            world.add_character();
         }
         
         world
@@ -253,12 +249,11 @@ impl World {
         // city2.neighbours.push(*id1);
     }
 
-    fn add_character(&mut self, name: String, pronouns: Pronouns) -> CharacterID {
+    fn add_character(&mut self) -> CharacterID {
         let id = self.character_id_counter;
         self.character_id_counter += 1;
-        let new_character = Character::new(name, pronouns);
-
-        self.characters.insert(CharacterID(id), new_character);
+        let char = Character::new();
+        self.characters.insert(CharacterID(id), char);
         CharacterID(id)
     }
 
@@ -290,7 +285,7 @@ impl World {
 
         event_id
     }
-    
+
     fn add_item(
         &mut self,
         item_type: ItemType,
@@ -300,7 +295,7 @@ impl World {
     ) -> ItemID {
         let item_id = ItemID(self.item_id_counter);
         self.item_id_counter += 1;
-        
+
         let creation_event = self.add_event(
             vec![initial_owner],
             time,
@@ -312,10 +307,15 @@ impl World {
                 initial_owner, item_id, initial_location
             ),
         );
-        
-        let mut item = Item::new(item_type, time, initial_owner, initial_location, creation_event);
+
+        let mut item = Item::new(
+            item_type,
+            time,
+            initial_owner,
+            initial_location,
+            creation_event,
+        );
         self.items.insert(item_id, item);
-        
         item_id
     }
 
@@ -354,7 +354,7 @@ impl World {
         let weight_updates = [
             (0, &new_move_prob),
             (1, &new_death_prob),
-            (2, &(population.pow(2))),
+            (2, &(population.pow(ENCOUNTER_POW))),
         ];
         let update_result = state.event_probability_map.update_weights(&weight_updates);
         match update_result {
@@ -459,7 +459,7 @@ impl World {
                 state.event_probability_map = WeightedIndex::new([0, 0, 0, 1]).unwrap();
             }
         }
-        
+  
         encounter
 
         // to do - reduce probability of meeting to 0 for the encountered character as well
@@ -484,7 +484,7 @@ impl World {
             states.push(CharacterState {
                 character: CharacterID(char_id),
                 city: self.layers[0][0], // start city
-                items: Vec::new(), // starting inventory is empty
+                items: Vec::new(),       // starting inventory is empty
                 event_probability_map,
                 dead: false,
             });
@@ -662,6 +662,10 @@ impl City {
 
 // -- Character class and associated classes
 
+const NAME_HARDLETTERS: &'static [&'static str] = &["p", "b", "t", "ch", "t", "k"];
+const NAME_VOWELS: &'static [&'static str] = &["a", "e", "ae", "io", "ai", "u"];
+const NAME_SOFTLETTERS: &'static [&'static str] = &["th", "nn", "ni", "sh"];
+
 #[derive(Debug)]
 pub struct Character {
     // used in textgen
@@ -679,11 +683,37 @@ pub struct Pronouns {
                             // could add more if needed
 }
 
+const PRONOUNS: &'static [&'static [&'static str]] = &[
+    &["she", "her", "her"],
+    &["him", "him", "his"],
+    &["they", "them", "their"],
+];
+
 impl Character {
-    pub fn new(name: String, pronouns: Pronouns) -> Self {
+    fn name_gen() -> String {
+        let mut first_syllable = "".to_string();
+        let mut rng = rand::thread_rng();
+        first_syllable.push_str(NAME_HARDLETTERS.choose(&mut rng).expect(""));
+        first_syllable.push_str(NAME_VOWELS.choose(&mut rng).expect(""));
+        first_syllable.push_str(NAME_SOFTLETTERS.choose(&mut rng).expect(""));
+        first_syllable.push_str(NAME_VOWELS.choose(&mut rng).expect(""));
+
+        first_syllable
+    }
+
+    fn pronoun_gen() -> Pronouns {
+        let mut rng = rand::thread_rng();
+        Pronouns {
+            nominative: PRONOUNS[0].choose(&mut rng).unwrap().to_string(),
+            accusative: PRONOUNS[0].choose(&mut rng).unwrap().to_string(),
+            dep_genitive: PRONOUNS[0].choose(&mut rng).unwrap().to_string(),
+        }
+    }
+
+    pub fn new() -> Self {
         Character {
-            name: name,
-            pronouns: pronouns,
+            name: Self::name_gen(),
+            pronouns: Self::pronoun_gen(),
             events: Vec::new(),
         }
     }
@@ -774,8 +804,9 @@ impl Event {
 
 // the types of items
 pub enum ItemType {
-    Tableware
+    Tableware,
 }
+
 
 // tracks a single move 
 pub struct ItemMoveRecord { 
@@ -787,13 +818,16 @@ pub struct ItemMoveRecord {
 
 impl ItemMoveRecord {
     pub fn expect_owner(&self) -> CharacterID {
-        self.new_owner.expect("Record was expected to have an associated owner")
+        self.new_owner
+            .expect("Record was expected to have an associated owner")
     }
     pub fn expect_location(&self) -> CityID {
-        self.new_location.expect("Record was expected to have an associated location")
+        self.new_location
+            .expect("Record was expected to have an associated location")
     }
     pub fn expect_event(&self) -> EventID {
-        self.event.expect("Record was expected to have an associated event")
+        self.event
+            .expect("Record was expected to have an associated event")
     }
 }
 
@@ -803,13 +837,13 @@ pub struct Item {
 }
 
 impl Item {
-    // creates a new item, at time t, with initial owner (creator) and initial location, 
+    // creates a new item, at time t, with initial owner (creator) and initial location,
     pub fn new(
         item_type: ItemType,
         time: usize,
         initial_owner: CharacterID,
         initial_location: CityID,
-        creation_event: EventID
+        creation_event: EventID,
     ) -> Self {
         Item {
             item_type: item_type,
@@ -817,35 +851,35 @@ impl Item {
                 time: 0,
                 new_owner: Some(initial_owner),
                 new_location: Some(initial_location),
-                event: Some(creation_event)
-            }]
+                event: Some(creation_event),
+            }],
         }
     }
-    
+
     pub fn get_status_at_time(&self, time: usize) -> ItemMoveRecord {
         let mut status = ItemMoveRecord {
             time: time,
             new_owner: None,
             new_location: None,
-            event: None
+            event: None,
         };
-        
+
         for record in self.owner_records.iter() {
             if record.time > time {
                 break;
             }
-            
+
             match record.new_owner {
                 Some(x) => status.new_owner = Some(x),
                 _ => (),
             }
-            
+
             match record.new_location {
                 Some(x) => status.new_location = Some(x),
                 _ => (),
             }
-        };
-        
+        }
+
         status
     }
 }

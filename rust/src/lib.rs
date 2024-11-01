@@ -46,9 +46,9 @@ mod tests {
             let &ref event = world.events.get(&world::EventID(event_id)).unwrap();
             println!("event {:?}: {:?}", event_id, event.summary);
         }
-        for (character_id, character) in world.characters {
+        for (_, character) in world.characters {
             println!("-------------------------");
-            println!("Character #{:?}'s events:", character_id);
+            println!("Character {:?}'s events:", character.name);
             for event_id in character.events {
                 let &ref event = world.events.get(&event_id).unwrap();
                 println!("event #{:?}: {:?},", event_id, event.summary);
