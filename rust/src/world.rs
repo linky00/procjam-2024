@@ -40,6 +40,8 @@ const LIST_EVENTS: [EventType; NUM_EVENTS] = [
     EventType::EventIdle,
 ];
 
+const PROB_ITEM_PASSED: f32 = 0.4;
+
 // -- World and world gen --
 
 // the state of a character at some given time
@@ -254,8 +256,9 @@ impl World {
     fn add_character(&mut self, name: String, pronouns: Pronouns) -> CharacterID {
         let id = self.character_id_counter;
         self.character_id_counter += 1;
-        let char = Character::new(name, pronouns);
-        self.characters.insert(CharacterID(id), char);
+        let new_character = Character::new(name, pronouns);
+
+        self.characters.insert(CharacterID(id), new_character);
         CharacterID(id)
     }
 
@@ -294,7 +297,7 @@ impl World {
         time: usize,
         initial_owner: CharacterID,
         initial_location: CityID
-    ) -> (EventID, ItemID) {
+    ) -> ItemID {
         let item_id = ItemID(self.item_id_counter);
         self.item_id_counter += 1;
         
@@ -313,7 +316,7 @@ impl World {
         let mut item = Item::new(item_type, time, initial_owner, initial_location, creation_event);
         self.items.insert(item_id, item);
         
-        (creation_event, item_id)
+        item_id
     }
 
     fn event_move(
@@ -393,7 +396,7 @@ impl World {
         state.event_probability_map = WeightedIndex::new(&[0, 0, 0, 1]).unwrap();
 
         // add death event
-        self.add_event(
+        let death_event = self.add_event(
             vec![state.character],
             time,
             None,
@@ -404,6 +407,17 @@ impl World {
                 state.character, state.city
             ),
         );
+        
+        // if the character had items, those items get a record of that character's death
+        for item_index in 0..state.items.len() {
+            let item_id = &mut state.items[item_index];
+            self.items.get_mut(item_id).unwrap().owner_records.push(ItemMoveRecord {
+                time: time,
+                new_owner: Some(state.character),
+                new_location: Some(state.city),
+                event: Some(death_event)
+            });
+        }
     }
 
     fn event_encounter(
@@ -412,7 +426,7 @@ impl World {
         state: &mut CharacterState,
         rng: &mut ThreadRng,
         city_populations: &HashMap<CityID, Vec<CharacterID>>,
-    ) {
+    ) -> EventID {
         // pick random person from city to encounter
         let city_population = city_populations.get(&state.city).unwrap();
         let &encountered = city_population
@@ -422,7 +436,7 @@ impl World {
             .unwrap();
 
         // add encounter event
-        self.add_event(
+        let encounter = self.add_event(
             vec![state.character, encountered],
             time,
             None,
@@ -433,7 +447,7 @@ impl World {
                 state.character, encountered, state.city
             ),
         );
-
+        
         // reduce probability of meeting after this to 0
         // (until character moves to a new city)
         let new_weights = [(2, &0)];
@@ -445,6 +459,8 @@ impl World {
                 state.event_probability_map = WeightedIndex::new([0, 0, 0, 1]).unwrap();
             }
         }
+        
+        encounter
 
         // to do - reduce probability of meeting to 0 for the encountered character as well
     }
@@ -480,9 +496,7 @@ impl World {
             let creator_id = self.characters.keys().choose(&mut rand::thread_rng()).unwrap().clone();
             let start_city = self.layers[0][0];
             
-            let (item_creation, item) = self.add_item(ItemType::Tableware, 0 , creator_id, start_city);
-            
-            self.characters.get_mut(&creator_id).unwrap().events.push(item_creation);
+            let item = self.add_item(ItemType::Tableware, 0 , creator_id, start_city);
             
             for state_index in 0..states.len() {
                 let state = &mut states[state_index];
@@ -557,7 +571,45 @@ impl World {
                         self.event_death(time, state);
                     }
                     EventType::EventEncounter => {
-                        self.event_encounter(time, state, &mut rng, &city_populations);
+                        // add the encounter event
+                        let encounter_id = self.event_encounter(time, state, &mut rng, &city_populations);
+                        
+                        // retrieve encountered character, and check if they had any items, have a chance to pass on items. this requires mutably borrowing from states, so we lose access to state
+                        let encountered_char_id = self.events
+                                .get(&encounter_id)
+                                .unwrap()
+                                .characters[1]
+                                .clone();
+
+                        let encountered_char_index = states
+                                .iter()
+                                .position(|x| x.character == encountered_char_id)
+                                .unwrap();
+                        
+                        let encountered_char_state = &mut states[encountered_char_index];
+
+                        let character_is_dead = encountered_char_state.dead;
+                            
+                        if (encountered_char_state.items.len() > 0) && ((rng.gen::<f32>() < PROB_ITEM_PASSED) || character_is_dead) {
+                            
+                            let item_id = encountered_char_state.items.choose(&mut rng).unwrap().clone();
+                            encountered_char_state.items.retain(|x| *x != item_id);
+                            
+                            // reborrow state 
+                            let state = &mut states[state_index];
+                            self.items
+                                .get_mut(&item_id)
+                                .unwrap()
+                                .owner_records
+                                .push(ItemMoveRecord {
+                                time: time,
+                                new_owner: Some(state.character),
+                                new_location: Some(state.city),
+                                event: Some(encounter_id)
+                            });
+                            
+                            state.items.push(item_id);
+                        }
                     }
                     _ => (),
                 }
@@ -644,9 +696,10 @@ impl Character {
 pub enum EventType {
     EventMove,      // an event representing moving from one city to another
     EventDeath,     // an event representing the death of a character.
-    EventEncounter, // an event representing a fleeting encounter between two people. An alive character could encounter a dead character. during an encounter, there is a chance for an event to change hands
+    EventEncounter, // an event representing a fleeting encounter between two people. An alive character could encounter a dead character. during an encounter, there is a chance for an item to change hands
     EventCreation(ItemID), // an event representing the creating of an item
     EventIdle, // an event representing doing nothing. this event should not be logged in event lists
+    EventBirth, // an event representing a character's birth
                // EventMoveTogether, // an event representing two characters moving together for a while.
                // add more!
 }
