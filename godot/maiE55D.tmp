@@ -60,13 +60,7 @@ size_flags_vertical = 1
 theme_override_fonts/font = ExtResource("2_sit0v")
 theme_override_font_sizes/font_size = 30
 text = "hello world!"
-horizontal_alignment = 1
-vertical_alignment = 1
 autowrap_mode = 3
-
-[node name="Panel" type="Panel" parent="Dialogue/TextArea"]
-layout_mode = 2
-theme = SubResource("Theme_shrad")
 
 [node name="History2" type="History" parent="Dialogue"]
 
