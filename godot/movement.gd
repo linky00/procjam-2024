@@ -3,6 +3,7 @@ extends CharacterBody3D
 var mouse_sensitivity = 0.002
 var speed = 3
 
+@onready var camera = $MainCamera
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -18,8 +19,8 @@ func _physics_process(delta):
 func _input(event):
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity)
-		$Camera3D.rotate_x(-event.relative.y * mouse_sensitivity)
-		$Camera3D.rotation.x = clampf($Camera3D.rotation.x, -deg_to_rad(70), deg_to_rad(70))
+		camera.rotate_x(-event.relative.y * mouse_sensitivity)
+		camera.rotation.x = clampf(camera.rotation.x, -deg_to_rad(70), deg_to_rad(70))
 	if event.is_action_pressed("escape"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if event.is_action_pressed("mouse_click"):

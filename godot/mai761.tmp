@@ -64,51 +64,31 @@ autowrap_mode = 3
 
 [node name="History2" type="History" parent="Dialogue"]
 
-[node name="Shop Scene" parent="Dialogue" instance=ExtResource("2_emcu1")]
+[node name="Shop Scene" parent="." instance=ExtResource("2_emcu1")]
 
-[node name="Shopkeeper" type="Sprite3D" parent="Dialogue/Shop Scene"]
+[node name="Shopkeeper" type="Sprite3D" parent="Shop Scene"]
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0.206273, 1.0629, -4.85593)
 billboard = 1
 texture = ExtResource("3_6o14m")
 
-[node name="Item1" type="Sprite3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -0.667, 0.937, -3.901)
+[node name="Item1" type="Sprite3D" parent="Shop Scene"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -1.79685, 0.818282, -3.90132)
 pixel_size = 0.002
 billboard = 1
 texture = ExtResource("6_1lkl8")
 script = ExtResource("7_0dc1i")
 
-[node name="Item2" type="Sprite3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -4.5094, 1.61519, -0.691)
-pixel_size = 0.002
-billboard = 1
-texture = ExtResource("6_1lkl8")
-script = ExtResource("7_0dc1i")
-
-[node name="Item3" type="Sprite3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -1.81196, 0.936984, -3.90132)
-pixel_size = 0.002
-billboard = 1
-texture = ExtResource("6_1lkl8")
-script = ExtResource("7_0dc1i")
-
-[node name="Player" type="CharacterBody3D" parent="Dialogue"]
+[node name="CharacterBody3D" type="CharacterBody3D" parent="Shop Scene"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.99629, 1.00235, 0.210234)
 script = ExtResource("5_u2e41")
 
-[node name="PlayerHitbox" type="CollisionShape3D" parent="Dialogue/Player"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Shop Scene/CharacterBody3D"]
 shape = ExtResource("6_uqep8")
 
-[node name="MainCamera" type="Camera3D" parent="Dialogue/Player"]
+[node name="Camera3D" type="Camera3D" parent="Shop Scene/CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00199997, 0.408137, 0)
-
-[node name="RayCast3D" type="RayCast3D" parent="Dialogue/Player/MainCamera"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00199997, -0.408137, 0)
-target_position = Vector3(0, 0, -1)
 
 [node name="CuriouserAndCuriouser" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("8_b4613")
 autoplay = true
 parameters/looping = true
-
-[connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item1" method="_on_dialogue_load_resource"]
