@@ -76,7 +76,7 @@ mod tests {
 
     #[test]
     fn run_eventgen_alot() {
-        for _ in 0..2 {
+        for _ in 0..100 {
             event_generator();
         }
     }

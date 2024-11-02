@@ -23,12 +23,19 @@ const BRICABRAC_WEAR: &'static [&'static [&'static str]] = &[
         "You can see this once being a striking part of someone's {3}.",
     ],
     &[
+        // replacements for teapot
         "the handle",
         "ornamental colors",
         "porcelain",
         "kitchenware",
     ],
-    &["the mouth", "embossings", "clay", "home decor"],
+    &[
+        // replacements for vase
+        "the mouth",
+        "embossings",
+        "clay",
+        "home decor",
+    ],
 ];
 const ACCESORIES_WEAR: &'static[&'static[&'static str]] = &[
     &[
@@ -70,8 +77,8 @@ const MOVE_LINES: &'static [&'static [&'static str]] = &[&[
 ]];
 const EXCHANGE_LINES: &'static [&'static [&'static str]] = &[&[
     "{owner_name} says {nominative_pronoun} stole it from someone called \"{old_owner_name}\" while they were both sheltering inside an old, broken down mill on the outskirts of {city_name}.",
-    "I believe {accusative_pronoun}. Apparently they slept together for a couple of days.",
-    "Apparetly {nominative_pronoun} eventually decided to head away on some ungodly hour, and never saw {accusative_pronoun1} again in {dep_genitive_pronoun} waking life."
+    "I believe {accusative_pronoun}. They apparently slept together for a couple of days.",
+    "I was told {nominative_pronoun} eventually decided to head away on some ungodly hour, and never saw {accusative_pronoun1} again in {dep_genitive_pronoun} waking life."
 ]];
 
 struct MyExtension;
