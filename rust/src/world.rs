@@ -759,9 +759,9 @@ pub struct Pronouns {
 }
 
 const PRONOUNS: &'static [&'static [&'static str]] = &[
-    &["she", "her", "her"],
-    &["him", "him", "his"],
-    &["they", "them", "their"],
+    &["she", "he", "they"],
+    &["her", "him", "them"],
+    &["her", "his", "their"],
 ];
 
 impl Character {
@@ -780,8 +780,8 @@ impl Character {
         let mut rng = rand::thread_rng();
         Pronouns {
             nominative: PRONOUNS[0].choose(&mut rng).unwrap().to_string(),
-            accusative: PRONOUNS[0].choose(&mut rng).unwrap().to_string(),
-            dep_genitive: PRONOUNS[0].choose(&mut rng).unwrap().to_string(),
+            accusative: PRONOUNS[1].choose(&mut rng).unwrap().to_string(),
+            dep_genitive: PRONOUNS[2].choose(&mut rng).unwrap().to_string(),
         }
     }
 

@@ -109,13 +109,14 @@ fn get_item_types(item: &Item) -> (usize, usize, usize) {
         ItemType::Teapot1 | ItemType::Teapot2 | ItemType::Teapot3 => 0,
         ItemType::Vase1 | ItemType::Vase2 | ItemType::Vase3 => 1,
     };
-    let item_subtype_i: usize = item_type_string
+    let mut item_subtype_i: usize = item_type_string
         .chars()
         .last()
         .unwrap()
         .to_string()
         .parse()
         .unwrap();
+    item_subtype_i -= 1;
 
     (item_supertype_i, item_type_i, item_subtype_i)
 }
@@ -128,7 +129,7 @@ pub fn generate_description(item: &Item, item_types: (usize, usize, usize)) -> A
     // first desc
     let first_desc: GString = match item.item_type {
         ItemType::Teapot1 | ItemType::Teapot2 | ItemType::Teapot3 => {
-            TEAPOT_DESCRIPTIONS[item_types.2]
+            TEAPOT_DESCRIPTIONS.get(item_types.2).expect("line 131")
         }
         ItemType::Vase1 | ItemType::Vase2 | ItemType::Vase3 => VASE_DESCRIPTIONS[item_types.2],
     }
@@ -143,13 +144,13 @@ pub fn generate_description(item: &Item, item_types: (usize, usize, usize)) -> A
     };
     let mut wear_format_hashmap: HashMap<String, String> = HashMap::new();
     let mut i: usize = 0;
-    for &desc in wear_list[item_types.1 + 1] {
+    for &desc in wear_list.get(item_types.1 + 1).expect("line 146").iter() {
         wear_format_hashmap.insert(i.to_string(), desc.to_string());
         i += 1;
     }
     let wear_desc: Vec<GString> = wear_list[0]
         .choose_multiple(&mut rng, wear_desc_amt)
-        .map(|&desc| GString::from(strfmt(desc, &wear_format_hashmap).unwrap()))
+        .map(|&desc| GString::from(strfmt(desc, &wear_format_hashmap).expect("line 152")))
         .collect();
     description.extend(wear_desc);
 
@@ -170,16 +171,22 @@ pub fn format_event_lines(
     world: &World,
     record: &ItemMoveRecord,
 ) -> Array<GString> {
-    let event = world.events.get(&record.expect_event()).unwrap();
+    let event = world.events.get(&record.expect_event()).expect("line 173");
     let mut lines_gstring: Array<GString> = Array::new();
 
     // get format parameters ready
     let mut format_vars: HashMap<String, String> = HashMap::new();
     // insert owner name
-    let owner = world.characters.get(&record.expect_owner()).unwrap();
+    let owner = world
+        .characters
+        .get(&record.expect_owner())
+        .expect("line 179");
     format_vars.insert("owner_name".to_string(), owner.name.clone());
     // insert city name
-    let city = world.cities.get(&record.expect_location()).unwrap();
+    let city = world
+        .cities
+        .get(&record.expect_location())
+        .expect("line 182");
     format_vars.insert("city_name".to_string(), city.name.clone());
     // insert pronouns of owner
     format_vars.insert(
@@ -196,7 +203,10 @@ pub fn format_event_lines(
     );
     // add old owner info if applicable.
     if event.event_type == EventType::EventEncounter {
-        let old_owner = world.characters.get(&event.characters[0]).unwrap();
+        let old_owner = world
+            .characters
+            .get(&event.characters[1])
+            .expect("line 205");
         format_vars.insert("old_owner_name".to_string(), old_owner.name.clone());
         format_vars.insert(
             "nominative_pronoun1".to_string(),
@@ -219,7 +229,7 @@ pub fn format_event_lines(
     // format all lines
     for &line in lines {
         // format line
-        let line_formatted = strfmt(line, &format_vars).unwrap();
+        let line_formatted = strfmt(line, &format_vars).expect("line 231");
         println!("Creation event line: {:?}", line_formatted);
         lines_gstring.push(&line_formatted.into());
     }
@@ -229,22 +239,33 @@ pub fn format_event_lines(
 }
 
 pub fn generate_lines_from_event(world: &World, record: &ItemMoveRecord) -> Option<Array<GString>> {
-    let event = world.events.get(&record.event.unwrap()).unwrap();
+    let event = world
+        .events
+        .get(&record.event.expect("line 241"))
+        .expect("line 241");
     match event.event_type {
         EventType::EventCreation(_) => {
-            let &lines = CREATION_LINES.choose(&mut rand::thread_rng()).unwrap();
+            let &lines = CREATION_LINES
+                .choose(&mut rand::thread_rng())
+                .expect("line 247");
             Some(format_event_lines(lines, world, record))
         }
         EventType::EventDeath => {
-            let &lines = DEATH_LINES.choose(&mut rand::thread_rng()).unwrap();
+            let &lines = DEATH_LINES
+                .choose(&mut rand::thread_rng())
+                .expect("line 253");
             Some(format_event_lines(lines, world, record))
         }
         EventType::EventMove => {
-            let &lines = MOVE_LINES.choose(&mut rand::thread_rng()).unwrap();
+            let &lines = MOVE_LINES
+                .choose(&mut rand::thread_rng())
+                .expect("line 259");
             Some(format_event_lines(lines, world, record))
         }
         EventType::EventEncounter => {
-            let &lines = EXCHANGE_LINES.choose(&mut rand::thread_rng()).unwrap();
+            let &lines = EXCHANGE_LINES
+                .choose(&mut rand::thread_rng())
+                .expect("line 265");
             Some(format_event_lines(lines, world, record))
         }
         _ => None,
@@ -256,7 +277,7 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
     let records = &item.owner_records;
     let oldest_records = get_records_from_time(&records, 0);
     println!("oldest records: {:?}", oldest_records);
-    let last_time_seen = records.last().unwrap().time;
+    let last_time_seen = records.last().expect("line 279").time;
     let newest_records = get_records_from_time(&records, last_time_seen);
     println!(
         "newest records (last seen at time {:?}): {:?}",
@@ -266,10 +287,14 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
     // generate oldest story, special dialogue for this
     let mut oldest_story_lines: Array<GString> = Array::new();
     // add lines for event
-    oldest_story_lines
-        .extend_array(&generate_lines_from_event(world, oldest_records.first().unwrap()).unwrap());
+    oldest_story_lines.extend_array(
+        &generate_lines_from_event(world, oldest_records.first().expect("line 290"))
+            .expect("line 290"),
+    );
     // choose an outro
-    let &outro = STORY_OUTROS.choose(&mut rand::thread_rng()).unwrap();
+    let &outro = STORY_OUTROS
+        .choose(&mut rand::thread_rng())
+        .expect("line 294");
     oldest_story_lines.push(&outro.into());
     // push to array of stories
     stories.push(ItemStory::new(oldest_story_lines));
@@ -287,11 +312,15 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
     // generate newest story, special dialogue for this
     let mut newest_story_lines: Array<GString> = Array::new();
     // choose an intro
-    let &intro = STORY_INTROS.choose(&mut rand::thread_rng()).unwrap();
+    let &intro = STORY_INTROS
+        .choose(&mut rand::thread_rng())
+        .expect("line 314");
     newest_story_lines.push(&intro.into());
     // add lines for event
-    newest_story_lines
-        .extend_array(&generate_lines_from_event(world, newest_records.last().unwrap()).unwrap());
+    newest_story_lines.extend_array(
+        &generate_lines_from_event(world, newest_records.last().expect("line 320"))
+            .expect("line 320"),
+    );
     // push to array of stories
     stories.push(ItemStory::new(newest_story_lines));
 
