@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://bmk37bo3ii1h"]
+
+[ext_resource type="Texture2D" uid="uid://b572l4r1kip1j" path="res://textures/wod2/Substance_graph_basecolor.png" id="1_ccuo7"]
+[ext_resource type="Texture2D" uid="uid://gcfwauarehy4" path="res://textures/wod/Substance_graph_roughness.png" id="1_lfihp"]
+
+[resource]
+albedo_color = Color(0.969093, 0.929724, 0.913342, 1)
+albedo_texture = ExtResource("1_ccuo7")
+roughness_texture = ExtResource("1_lfihp")
