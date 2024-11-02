@@ -160,7 +160,7 @@ pub struct World {
     pub characters: HashMap<CharacterID, Character>,
     pub events: HashMap<EventID, Event>,
     pub items: HashMap<ItemID, Item>,
-    city_id_counter: usize,
+    pub city_id_counter: usize,
     pub event_id_counter: usize,
     character_id_counter: usize,
     item_id_counter: usize,
@@ -797,7 +797,7 @@ impl Character {
 // -- Events --
 
 // event types (the float is used for probability)
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum EventType {
     EventMove,             // an event representing moving from one city to another
     EventDeath,            // an event representing the death of a character.

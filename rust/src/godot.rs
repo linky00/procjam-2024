@@ -40,18 +40,39 @@ const ACCESORIES_WEAR: &'static[&'static[&'static str]] = &[
 ];
 
 // possible introduction lines in a story
-const STORY_INTROS: &'static [&'static str] = &["God, let me think... It's been a while."];
+const STORY_INTROS: &'static [&'static str] = &["Let me think... It's been a while."];
+// possible ending lines in a story
+const STORY_OUTROS: &'static [&'static str] = &["I believe that's all that's known about that."];
 
 // possible event-specific lines for a story
+// FORMAT RULES:
+// write {owner_name} as a stand-in for the item's owner's name.
+// write {city_name} as a stand-in for the name of the city where item is.
+// write {nominative_pronoun} as a stand-in for a nominative pronoun for the owner (she, he, they...).
+// write {accusative_pronoun} as a stand-in for an accusative pronoun for the owner (her, him, them...).
+// write {dep_genitive_pronoun} as a stand-in for a dependent genitive pronoun for the owner (her, his, their...).
+// write {old_owner_name} when applicable as a stand-in for the old owner during an item exchange event.
+// add 1 to the end of the pronoun placeholder as a stand-in for the pronouns of the old owner during an exchange event.
+// ex: {nominative_pronoun1} would be the nominative pronoun of the old owner.
 const CREATION_LINES: &'static [&'static [&'static str]] = &[&[
     "Gosh, you're really testing my memory now...",
     "I remember one of my... returning customers, briefly remarking on the subject.",
-    "They believed it was created by this person called {creator_name} way back in the day.",
+    "They believed it was created by this person called {owner_name} way back in the day, in {city_name}.",
     "As to why or how, your guess is as good as mine.",
 ]];
-const DEATH_LINES: &'static [&'static [&'static str]] = &[&[]];
-const MOVE_LINES: &'static [&'static [&'static str]] = &[&[]];
-const EXCHANGE_LINES: &'static [&'static [&'static str]] = &[&[]];
+//
+const DEATH_LINES: &'static [&'static [&'static str]] = &[&[
+    "I think {nominative_pronoun} died in {city_name}, when the fires first hit.",
+    "What a shame. Had {nominative_pronoun} survived, I'm certain we'd have much to tell each other.",
+]];
+const MOVE_LINES: &'static [&'static [&'static str]] = &[&[
+    "Like most people who could afford to, {nominative_pronoun} moved to {city_name} when the calamity eventually hit.",
+]];
+const EXCHANGE_LINES: &'static [&'static [&'static str]] = &[&[
+    "{owner_name} says {nominative_pronoun} stole it from someone called \"{old_owner_name}\" while they were both sheltering inside an old, broken down mill on the outskirts of {city_name}.",
+    "I believe {accusative_pronoun}. Apparently they slept together for a couple of days.",
+    "Apparetly {nominative_pronoun} eventually decided to head away on some ungodly hour, and never saw {accusative_pronoun1} again in {dep_genitive_pronoun} waking life."
+]];
 
 struct MyExtension;
 
@@ -137,25 +158,88 @@ pub fn get_records_from_time(records: &Vec<ItemMoveRecord>, time: usize) -> Vec<
     result
 }
 
+pub fn format_event_lines(
+    lines: &'static [&'static str],
+    world: &World,
+    record: &ItemMoveRecord,
+) -> Array<GString> {
+    let event = world.events.get(&record.expect_event()).unwrap();
+    let mut lines_gstring: Array<GString> = Array::new();
+
+    // get format parameters ready
+    let mut format_vars: HashMap<String, String> = HashMap::new();
+    // insert owner name
+    let owner = world.characters.get(&record.expect_owner()).unwrap();
+    format_vars.insert("owner_name".to_string(), owner.name.clone());
+    // insert city name
+    let city = world.cities.get(&record.expect_location()).unwrap();
+    format_vars.insert("city_name".to_string(), city.name.clone());
+    // insert pronouns of owner
+    format_vars.insert(
+        "nominative_pronoun".to_string(),
+        owner.pronouns.nominative.clone(),
+    );
+    format_vars.insert(
+        "accusative_pronoun".to_string(),
+        owner.pronouns.accusative.clone(),
+    );
+    format_vars.insert(
+        "dep_genitive_pronoun".to_string(),
+        owner.pronouns.dep_genitive.clone(),
+    );
+    // add old owner info if applicable.
+    if event.event_type == EventType::EventEncounter {
+        let old_owner = world.characters.get(&event.characters[0]).unwrap();
+        format_vars.insert("old_owner_name".to_string(), old_owner.name.clone());
+        format_vars.insert(
+            "nominative_pronoun1".to_string(),
+            old_owner.pronouns.nominative.clone(),
+        );
+        format_vars.insert(
+            "accusative_pronoun1".to_string(),
+            old_owner.pronouns.accusative.clone(),
+        );
+        format_vars.insert(
+            "dep_genitive_pronoun1".to_string(),
+            old_owner.pronouns.dep_genitive.clone(),
+        );
+    }
+    // add old city info if applicable.
+    if event.event_type == EventType::EventMove {
+        // TODO
+    }
+
+    // format all lines
+    for &line in lines {
+        // format line
+        let line_formatted = strfmt(line, &format_vars).unwrap();
+        println!("Creation event line: {:?}", line_formatted);
+        lines_gstring.push(&line_formatted.into());
+    }
+
+    // return formatted lines
+    lines_gstring
+}
+
 pub fn generate_lines_from_event(world: &World, record: &ItemMoveRecord) -> Option<Array<GString>> {
     let event = world.events.get(&record.event.unwrap()).unwrap();
     match event.event_type {
         EventType::EventCreation(_) => {
             let &lines = CREATION_LINES.choose(&mut rand::thread_rng()).unwrap();
-            let mut lines_gstring: Array<GString> = Array::new();
-            for &line in lines {
-                let owner = world.characters.get(&record.expect_owner()).unwrap();
-                let mut format_vars: HashMap<String, String> = HashMap::new();
-                format_vars.insert("creator_name".to_string(), owner.name.clone());
-                let line_formatted = strfmt(line, &format_vars).unwrap();
-                println!("Creation event line: {:?}", line_formatted);
-                lines_gstring.push(&line_formatted.into());
-            }
-            Some(lines_gstring)
+            Some(format_event_lines(lines, world, record))
         }
-        // EventType::EventDeath => Some(GString::new()),
-        // EventType::EventMove => Some(GString::new()),
-        // EventType::EventEncounter => Some(GString::new()),
+        EventType::EventDeath => {
+            let &lines = DEATH_LINES.choose(&mut rand::thread_rng()).unwrap();
+            Some(format_event_lines(lines, world, record))
+        }
+        EventType::EventMove => {
+            let &lines = MOVE_LINES.choose(&mut rand::thread_rng()).unwrap();
+            Some(format_event_lines(lines, world, record))
+        }
+        EventType::EventEncounter => {
+            let &lines = EXCHANGE_LINES.choose(&mut rand::thread_rng()).unwrap();
+            Some(format_event_lines(lines, world, record))
+        }
         _ => None,
     }
 }
@@ -174,22 +258,35 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
 
     // generate oldest story, special dialogue for this
     let mut oldest_story_lines: Array<GString> = Array::new();
-    // choose an intro
-    let &intro = STORY_INTROS.choose(&mut rand::thread_rng()).unwrap();
-    oldest_story_lines.push(&intro.into());
-    // add rest
+    // add lines for event
     oldest_story_lines
         .extend_array(&generate_lines_from_event(world, oldest_records.first().unwrap()).unwrap());
+    // choose an outro
+    let &outro = STORY_OUTROS.choose(&mut rand::thread_rng()).unwrap();
+    oldest_story_lines.push(&outro.into());
     // push to array of stories
     stories.push(ItemStory::new(oldest_story_lines));
 
-    // generate other stories
-    for record_i in (1..MAX_TIME) {
-        ()
+    // generate in between stories
+    for record_i in 1..last_time_seen {
+        let record = &records[record_i];
+        let lines_option = generate_lines_from_event(world, &record);
+        match lines_option {
+            Some(lines) => stories.push(ItemStory::new(lines)),
+            None => (),
+        }
     }
 
     // generate newest story, special dialogue for this
     let mut newest_story_lines: Array<GString> = Array::new();
+    // choose an intro
+    let &intro = STORY_INTROS.choose(&mut rand::thread_rng()).unwrap();
+    newest_story_lines.push(&intro.into());
+    // add lines for event
+    newest_story_lines
+        .extend_array(&generate_lines_from_event(world, newest_records.last().unwrap()).unwrap());
+    // push to array of stories
+    stories.push(ItemStory::new(newest_story_lines));
 
     // collect into array and return
     stories
@@ -201,49 +298,20 @@ impl History {
     fn generate_history(&mut self) {
         // generate events
         self.world.generate_events();
-
         let world_items = &self.world.items;
-        let mut item_data_vec: Vec<Gd<ItemData>> = Vec::new();
-        for (item_id, item) in world_items.into_iter() {
+
+        // generate item data for each item
+        let mut item_data: Array<Gd<ItemData>> = Array::new();
+        for (_, item) in world_items.into_iter() {
             let item_types = get_item_types(item);
             let item_type_string = item.item_type.to_string();
             let description = generate_description(item, item_types);
+            let stories = generate_stories(&self.world, item);
 
-            item_data_vec.push(ItemData::new(
-                item_type_string.into(),
-                description,
-                array![ItemStory::new(array![GString::from("")])],
-            ));
+            item_data.push(ItemData::new(item_type_string.into(), description, stories));
         }
 
-        self.items = array![];
-
-        // replace this with actual history!
-        self.items = array![ItemData::new(
-            "shoe".into(),
-            array![
-                GString::from("A pair of shoes."),
-                GString::from("The soles are worn out."),
-                GString::from("They have an odd smell."),
-                GString::from("The laces are burnt."),
-            ],
-            array![
-                ItemStory::new(array![
-                    GString::from("I bought these shoes off a guy named Jacque..."),
-                    GString::from("Strange man."),
-                    GString::from("He hailed from Nilte."),
-                    GString::from("When the fire hit in 443, he fled to our city."),
-                ]),
-                ItemStory::new(array![
-                    GString::from("Who had them before Jacque?"),
-                    GString::from("Good question."),
-                    GString::from("They were brought to Nilte in 411 by a woman called Helen from Troy."),
-                    GString::from("She once stood them in pig shit."),
-                    GString::from("They haven't smelt the same since."),
-                    GString::from("I think she tried throwing them away, and Jacque picked them up for some reason.")
-                ])
-            ]
-        )];
+        self.items = item_data;
 
         self.generated = true;
     }
@@ -309,3 +377,32 @@ impl ItemStory {
         Gd::from_object(Self { lines })
     }
 }
+
+/*
+putting Ada's example item story down here for reference:
+self.items = array![ItemData::new(
+    "shoe".into(),
+    array![
+        GString::from("A pair of shoes."),
+        GString::from("The soles are worn out."),
+        GString::from("They have an odd smell."),
+        GString::from("The laces are burnt."),
+    ],
+    array![
+        ItemStory::new(array![
+            GString::from("I bought these shoes off a guy named Jacque..."),
+            GString::from("Strange man."),
+            GString::from("He hailed from Nilte."),
+            GString::from("When the fire hit in 443, he fled to our city."),
+        ]),
+        ItemStory::new(array![
+            GString::from("Who had them before Jacque?"),
+            GString::from("Good question."),
+            GString::from("They were brought to Nilte in 411 by a woman called Helen from Troy."),
+            GString::from("She once stood them in pig shit."),
+            GString::from("They haven't smelt the same since."),
+            GString::from("I think she tried throwing them away, and Jacque picked them up for some reason.")
+        ])
+    ]
+)];
+*/
