@@ -60,14 +60,14 @@ billboard = 1
 texture = ExtResource("3_6o14m")
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="Shop Scene"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.99629, 1.41763, 0.210234)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.99629, 1.41763, -1.46969)
 script = ExtResource("5_u2e41")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shop Scene/CharacterBody3D"]
 shape = ExtResource("6_uqep8")
 
 [node name="Camera3D" type="Camera3D" parent="Shop Scene/CharacterBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.002, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01605, -0.417616, 1.46969)
 
 [node name="AfterTheDustHasSettled" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_oqrsw")

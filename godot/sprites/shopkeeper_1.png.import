@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://q8r64gttgot7"
-path.s3tc="res://.godot/imported/carpet3_IMG_2276.png-112dc230524cf15341b5fc092686f546.s3tc.ctex"
+uid="uid://clqeul4aqaoay"
+path.s3tc="res://.godot/imported/shopkeeper_1.png-1c9075e4841e4948dc30828801d64f18.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://objects/other objects/carpet3_IMG_2276.png"
-dest_files=["res://.godot/imported/carpet3_IMG_2276.png-112dc230524cf15341b5fc092686f546.s3tc.ctex"]
+source_file="res://sprites/shopkeeper_1.png"
+dest_files=["res://.godot/imported/shopkeeper_1.png-1c9075e4841e4948dc30828801d64f18.s3tc.ctex"]
 
 [params]
 

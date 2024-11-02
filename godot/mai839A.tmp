@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://q8f0m826d0d1"]
+[gd_scene load_steps=9 format=3 uid="uid://q8f0m826d0d1"]
 
 [ext_resource type="PackedScene" uid="uid://sdpndho1jvhu" path="res://dialogue.tscn" id="1_10nrf"]
 [ext_resource type="PackedScene" uid="uid://dda5iklgsttrf" path="res://node_3d.tscn" id="2_emcu1"]
@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://clqeul4aqaoay" path="res://sprites/shopkeeper_1.png" id="3_6o14m"]
 [ext_resource type="AudioStream" uid="uid://oeh65wk0exee" path="res://audio/after the dust has settled.mp3" id="4_oqrsw"]
 [ext_resource type="Script" path="res://movement.gd" id="5_u2e41"]
-[ext_resource type="Shape3D" uid="uid://iatsgw107br" path="res://ui/capsule.tres" id="6_uqep8"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_hpbeb"]
 
@@ -59,15 +58,11 @@ transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0.206273, 1.0629, -4.85
 billboard = 1
 texture = ExtResource("3_6o14m")
 
-[node name="CharacterBody3D" type="CharacterBody3D" parent="Shop Scene"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.99629, 1.41763, 0.210234)
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.980241, 1.00001, 0)
 script = ExtResource("5_u2e41")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Shop Scene/CharacterBody3D"]
-shape = ExtResource("6_uqep8")
-
-[node name="Camera3D" type="Camera3D" parent="Shop Scene/CharacterBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.002, 0, 0)
+[node name="Camera3D" type="Camera3D" parent="Node3D"]
 
 [node name="AfterTheDustHasSettled" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_oqrsw")
