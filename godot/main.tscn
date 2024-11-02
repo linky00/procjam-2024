@@ -108,7 +108,7 @@ target_position = Vector3(0, 0, -1)
 
 [node name="CuriouserAndCuriouser" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("8_b4613")
-autoplay = true
+volume_db = -7.0
 parameters/looping = true
 
 [connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item1" method="_on_dialogue_load_resource"]

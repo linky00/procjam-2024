@@ -300,7 +300,9 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
     stories.push(ItemStory::new(oldest_story_lines));
 
     // generate in between stories
-    for record_i in 1..last_time_seen {
+    for record_i in 1..(records.len() - 1) {
+        godot_print!("{}", record_i);
+        godot_print!("{}", records.len());
         let record = &records[record_i];
         let lines_option = generate_lines_from_event(world, &record);
         match lines_option {

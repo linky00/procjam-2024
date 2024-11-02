@@ -16,8 +16,17 @@ signal loadResource(item:String, texture:Resource)
 }
 
 func _ready():
-	history.generate_history()
-	$TextArea.set_visible(false)
+	for i in range(100):
+		history.generate_history()
+		
+	print("")
+	for i in range(3):
+		print(i)
+		var item = history.get_item(i)
+		print(item.item_type)
+		print(item.description)
+		for story in item.stories:
+			print(story.lines)
 	
 
 func _input(event):
@@ -25,6 +34,7 @@ func _input(event):
 		if ongoing_text:
 			advance_text()
 		else:
+			print(history)
 			show_text(["Welcome to my shop!",  "Feel free to look around."])
 
 func show_text(new_text: Array):
