@@ -1,5 +1,8 @@
 extends CharacterBody3D
 
+signal approach(item: String)
+signal advance
+
 var mouse_sensitivity = 0.002
 var speed = 3
 
@@ -28,4 +31,12 @@ func _input(event):
 	if event.is_action_pressed("mouse_click"):
 		if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		print($MainCamera/RayCast3D.get_collider())
+		
+		var clicked_on = $MainCamera/RayCast3D.get_collider()
+		if clicked_on:
+			if clicked_on.name.substr(0,4) == "Item":
+				emit_signal("approach", clicked_on.name)
+			else:
+				emit_signal("advance")
+		else:
+			emit_signal("advance")

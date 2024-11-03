@@ -117,7 +117,7 @@ stretch_mode = 5
 
 [node name="AfterTheDustHasSettled" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_h888o")
-volume_db = 0.455
+volume_db = -10.0
 autoplay = true
 
 [connection signal="pressed" from="EnterButtonContainer/EnterButton" to="." method="_on_enter_button_pressed"]
