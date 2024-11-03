@@ -1,6 +1,4 @@
-extends Sprite3D
-
-signal approach(item: String)
+extends Area3D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -8,4 +6,4 @@ func _ready() -> void:
 
 func _on_dialogue_load_resource(item: String, texture: Resource) -> void:
 	if name == item:
-		self.texture = texture
+		$Sprite.texture = texture

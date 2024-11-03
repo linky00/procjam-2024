@@ -18,6 +18,12 @@ signal loadResource(item:String, texture:Resource)
 	"teapot3": load("res://sprites/teapot3.png")
 }
 
+var story_counts = {
+	"Item1": 0,
+	"Item2": 0,
+	"Item3": 0	
+}
+
 func _ready():
 	history.generate_history()
 		
@@ -32,14 +38,6 @@ func _ready():
 		print("Item"+str(i+1))
 		emit_signal("loadResource", "Item"+str(i+1), sprites[item.item_type])
 	
-
-func _input(event):
-	if event.is_action_pressed("mouse_click") and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
-		if ongoing_text:
-			advance_text()
-		else:
-			print(history)
-			show_text(["Welcome to my shop!",  "Feel free to look around."])
 
 func show_text(new_text: Array):
 	text = new_text
@@ -56,5 +54,28 @@ func advance_text():
 		$TextArea.set_visible(false)
 		ongoing_text = false
 	
-func on_item_approach(item: String):
-	show_text(["Ah, I see you're interested in item " + item + "..."])
+func _on_player_approach(item_name: String):
+	if not ongoing_text:
+		var item_num = int(item_name.substr(4)) - 1
+		var item = history.get_item(item_num)
+		
+		var i = item.stories.size() - 1 - story_counts[item_name]
+		print(i)
+		print(item.stories[i].lines)
+		
+		show_text(item.stories[i].lines)
+		
+		story_counts[item_name] += 1
+		if story_counts[item_name] >= item.stories.size():
+			story_counts[item_name] = 0
+		
+	else:
+		advance_text()
+
+
+func _on_player_advance() -> void:
+	if ongoing_text:
+		advance_text()
+	else:
+		print(history)
+		show_text(["Welcome to my shop!",  "Feel free to look around."])

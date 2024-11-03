@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://q8f0m826d0d1"]
+[gd_scene load_steps=13 format=3 uid="uid://q8f0m826d0d1"]
 
 [ext_resource type="PackedScene" uid="uid://sdpndho1jvhu" path="res://dialogue.tscn" id="1_10nrf"]
 [ext_resource type="PackedScene" uid="uid://dda5iklgsttrf" path="res://node_3d.tscn" id="2_emcu1"]
@@ -8,7 +8,9 @@
 [ext_resource type="Script" path="res://movement.gd" id="5_u2e41"]
 [ext_resource type="Shape3D" uid="uid://iatsgw107br" path="res://ui/capsule.tres" id="6_uqep8"]
 [ext_resource type="Script" path="res://item.gd" id="7_0dc1i"]
+[ext_resource type="Shape3D" uid="uid://cjbduiyaskdb" path="res://sphere.tres" id="7_npkrc"]
 [ext_resource type="AudioStream" uid="uid://cecpd4klnlswp" path="res://audio/curiouser and curiouser.mp3" id="8_b4613"]
+[ext_resource type="Texture2D" uid="uid://qis84oulhnt0" path="res://sprites/teapot3.png" id="8_kqdoj"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_hpbeb"]
 
@@ -65,27 +67,48 @@ autowrap_mode = 3
 [node name="Shop Scene" parent="Dialogue" instance=ExtResource("2_emcu1")]
 
 [node name="Shopkeeper" type="Sprite3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0.206273, 1.0629, -4.85593)
-billboard = 1
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -0.986842, 1.0629, -5.05107)
+billboard = 2
 texture = ExtResource("3_6o14m")
 
-[node name="Item2" type="Sprite3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -4.5094, 1.61519, -0.691)
-pixel_size = 0.002
-billboard = 1
+[node name="Item1" type="Area3D" parent="Dialogue/Shop Scene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.925001, -4.2)
 script = ExtResource("7_0dc1i")
 
-[node name="Item3" type="Sprite3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -1.81196, 0.936984, -3.90132)
+[node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item1"]
+shape = ExtResource("7_npkrc")
+
+[node name="Sprite" type="Sprite3D" parent="Dialogue/Shop Scene/Item1"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
 pixel_size = 0.002
-billboard = 1
+billboard = 2
+texture = ExtResource("8_kqdoj")
+
+[node name="Item2" type="Area3D" parent="Dialogue/Shop Scene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.583171, 0.925001, -0.201468)
 script = ExtResource("7_0dc1i")
 
-[node name="Item1" type="Sprite3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0.883534, -4.25757)
+[node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item2"]
+shape = ExtResource("7_npkrc")
+
+[node name="Sprite" type="Sprite3D" parent="Dialogue/Shop Scene/Item2"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
 pixel_size = 0.002
-billboard = 1
+billboard = 2
+texture = ExtResource("8_kqdoj")
+
+[node name="Item3" type="Area3D" parent="Dialogue/Shop Scene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.95463, 0.925001, -4.2)
 script = ExtResource("7_0dc1i")
+
+[node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item3"]
+shape = ExtResource("7_npkrc")
+
+[node name="Sprite" type="Sprite3D" parent="Dialogue/Shop Scene/Item3"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+pixel_size = 0.002
+billboard = 2
+texture = ExtResource("8_kqdoj")
 
 [node name="Player" type="CharacterBody3D" parent="Dialogue"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.99629, 1.00235, 0.210234)
@@ -95,18 +118,21 @@ script = ExtResource("5_u2e41")
 shape = ExtResource("6_uqep8")
 
 [node name="MainCamera" type="Camera3D" parent="Dialogue/Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00199997, 0.408137, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
 
 [node name="RayCast3D" type="RayCast3D" parent="Dialogue/Player/MainCamera"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00199997, -0.408137, 0)
-target_position = Vector3(0, 0, -1)
+target_position = Vector3(0, 0, -100)
+hit_back_faces = false
 collide_with_areas = true
+debug_shape_thickness = 5
 
 [node name="CuriouserAndCuriouser" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("8_b4613")
 volume_db = -7.0
 parameters/looping = true
 
+[connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item1" method="_on_dialogue_load_resource"]
 [connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item2" method="_on_dialogue_load_resource"]
 [connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item3" method="_on_dialogue_load_resource"]
-[connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item1" method="_on_dialogue_load_resource"]
+[connection signal="advance" from="Dialogue/Player" to="Dialogue" method="_on_player_advance"]
+[connection signal="approach" from="Dialogue/Player" to="Dialogue" method="_on_player_approach"]
