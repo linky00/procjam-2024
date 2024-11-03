@@ -27,6 +27,7 @@ struct EventLines {
     move_lines: Vec<Vec<String>>,
     exchange_lines: Vec<Vec<String>>,
     postmortem_exchange_lines: Vec<Vec<String>>,
+    _format_rules: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -80,11 +81,12 @@ fn get_item_types(item: &Item) -> (usize, usize, usize) {
         ItemType::Vase1 | ItemType::Vase2 | ItemType::Vase3 => 1,
         ItemType::Cup1 => 2,
         ItemType::Statue => 3,
-        ItemType::Orb => 4,
+        ItemType::Orb => unreachable!(),
         ItemType::Belt => 5,
         ItemType::Bracelet => 6,
         ItemType::Hat => 7,
-        ItemType::Shoes1 | ItemType::Shoes2 | ItemType::Shoes3 => 8,
+        ItemType::Shoes1 | ItemType::Shoes2 => 8,
+        ItemType::Shoes3 => unreachable!(),
         ItemType::Sunglasses => 9,
         ItemType::Necklace => 10,
     };
@@ -114,23 +116,31 @@ pub fn generate_description(
         .into();
     description.push(first_desc);
 
-    // desc of wear
+     //desc of wear
     let wear_descs = &descs.wear_descriptions;
+    let mut wear_format_hashmap: HashMap<String, String> = HashMap::new();
+    
     let wear_list = match item_types.0 {
         0 => &wear_descs.bricabrac_wear,
         1 => &wear_descs.accessory_wear,
         _ => unreachable!(),
     };
-    let mut wear_format_hashmap: HashMap<String, String> = HashMap::new();
-    let mut i: usize = 0;
-    for desc in wear_list
-        .get(item_types.1 + 1)
-        .expect("the appropriate non-formatted wear description")
-        .iter()
-    {
-        wear_format_hashmap.insert(i.to_string(), desc.to_string());
-        i += 1;
+    
+    if item_types.0 == 0 {
+        let mut i: usize = 0;
+        for desc in wear_list
+            .get(item_types.1 + 1)
+            .expect("the appropriate non-formatted wear description")
+            .iter()
+        {
+            wear_format_hashmap.insert(i.to_string(), desc.to_string());
+            i += 1;
+        }
     }
+
+
+
+    
     let wear_desc: Vec<GString> = wear_list[0]
         .choose_multiple(&mut rng, wear_desc_amt)
         .map(|desc| {

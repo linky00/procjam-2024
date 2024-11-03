@@ -58,19 +58,13 @@ var default_stories = [
 ]
 
 func _ready():
-	history.generate_history()
+	
 		
 	$TextArea.set_visible(false)
+	history.generate_history()
 	for i in range(6):
 		var item = history.get_item(i)
 		emit_signal("loadResource", "Item"+str(i+1), sprites[item.item_type])
-#		print(i)
-
-#		print(item.item_type)
-#		print(item.description)
-#		for story in item.stories:
-#			print(story.lines)
-#		print("Item"+str(i+1))
 
 func show_text(new_text: Array):
 	text = new_text

@@ -936,7 +936,7 @@ impl std::fmt::Display for ItemType {
     }
 }
 
-const NUM_ITEM_TYPES: usize = 17; // number of item types
+const NUM_ITEM_TYPES: usize = 15; // number of item types
 const LIST_ITEM_TYPES: [ItemType; NUM_ITEM_TYPES] = [
     ItemType::Teapot1,
     ItemType::Teapot2,
@@ -946,14 +946,11 @@ const LIST_ITEM_TYPES: [ItemType; NUM_ITEM_TYPES] = [
     ItemType::Vase3,
     ItemType::Cup1,
     ItemType::Statue,
-    ItemType::Orb,
-    
     ItemType::Belt,
     ItemType::Bracelet,
     ItemType::Hat,
     ItemType::Shoes1,
     ItemType::Shoes2,
-    ItemType::Shoes3,
     ItemType::Sunglasses,
     ItemType::Necklace
 ];

@@ -12,7 +12,7 @@
         "cup1": "A cup emblazoned with glyphs you do not recognise.",
         "hat1": "A pink cloche hat made of wool.",
         "shoes1": "A pair of high-heeled shoes with split toes.",
-        "shoes3": "A well-loved pair of leather shoes.",
+        "shoes2": "A well-loved pair of leather shoes.",
         "statue1": "A statue in the shape of an angel, its intricately carved head in its hands.",
         "sunglasses1": "An old pair of sunglasses with blue accents.",
         "necklace1": "A silver necklace adorned with sunstones."
@@ -49,12 +49,6 @@
 				"inked details",
 				"ceramic",
 				"personal collection"
-			],
-            [
-				"inside",
-				"brushed texture",
-				"crockery",
-				"kitchen collection"
 			]
 		],
 		"accessory_wear": [
@@ -65,8 +59,7 @@
 				"Years of wear... almost transforms the item into something else.",
 				"This one has gathered enough dust to last a lifetime.",
 				"Stylish... for a past era perhaps."
-			],
-			[]
+			]
 		]
 	},
 	"story_intros": [

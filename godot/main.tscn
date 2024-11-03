@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://q8f0m826d0d1"]
+[gd_scene load_steps=15 format=3 uid="uid://q8f0m826d0d1"]
 
 [ext_resource type="PackedScene" uid="uid://sdpndho1jvhu" path="res://dialogue.tscn" id="1_10nrf"]
 [ext_resource type="PackedScene" uid="uid://dda5iklgsttrf" path="res://node_3d.tscn" id="2_emcu1"]
@@ -10,8 +10,9 @@
 [ext_resource type="Script" path="res://item.gd" id="7_0dc1i"]
 [ext_resource type="Shape3D" uid="uid://cjbduiyaskdb" path="res://sphere.tres" id="7_npkrc"]
 [ext_resource type="Script" path="res://shopkeeper.gd" id="8_1d02x"]
-[ext_resource type="AudioStream" uid="uid://cecpd4klnlswp" path="res://audio/curiouser and curiouser.mp3" id="8_b4613"]
+[ext_resource type="AudioStream" uid="uid://dmi6wqofop12n" path="res://audio/curiouser and curiouser.mp3" id="8_b4613"]
 [ext_resource type="Texture2D" uid="uid://qis84oulhnt0" path="res://sprites/teapot3.png" id="8_kqdoj"]
+[ext_resource type="Texture2D" uid="uid://byx6ca7knu85d" path="res://ui/crosshair_idle.png" id="12_gtll2"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_hpbeb"]
 
@@ -178,6 +179,23 @@ target_position = Vector3(0, 0, -100)
 hit_back_faces = false
 collide_with_areas = true
 debug_shape_thickness = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="Dialogue"]
+self_modulate = Color(1, 1, 1, 0)
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Dialogue/CenterContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_stretch_ratio = 0.38
+texture = ExtResource("12_gtll2")
+expand_mode = 2
 
 [node name="CuriouserAndCuriouser" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("8_b4613")
