@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://q8f0m826d0d1"]
+[gd_scene load_steps=14 format=3 uid="uid://q8f0m826d0d1"]
 
 [ext_resource type="PackedScene" uid="uid://sdpndho1jvhu" path="res://dialogue.tscn" id="1_10nrf"]
 [ext_resource type="PackedScene" uid="uid://dda5iklgsttrf" path="res://node_3d.tscn" id="2_emcu1"]
@@ -9,6 +9,7 @@
 [ext_resource type="Shape3D" uid="uid://iatsgw107br" path="res://capsule.tres" id="6_uqep8"]
 [ext_resource type="Script" path="res://item.gd" id="7_0dc1i"]
 [ext_resource type="Shape3D" uid="uid://cjbduiyaskdb" path="res://sphere.tres" id="7_npkrc"]
+[ext_resource type="Script" path="res://shopkeeper.gd" id="8_1d02x"]
 [ext_resource type="AudioStream" uid="uid://cecpd4klnlswp" path="res://audio/curiouser and curiouser.mp3" id="8_b4613"]
 [ext_resource type="Texture2D" uid="uid://qis84oulhnt0" path="res://sprites/teapot3.png" id="8_kqdoj"]
 
@@ -108,8 +109,51 @@ pixel_size = 0.002
 billboard = 2
 texture = ExtResource("8_kqdoj")
 
+[node name="Item4" type="Area3D" parent="Dialogue/Shop Scene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.24784, 0.797439, 2.45052)
+script = ExtResource("7_0dc1i")
+
+[node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = ExtResource("7_npkrc")
+
+[node name="Sprite" type="Sprite3D" parent="Dialogue/Shop Scene/Item4"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+pixel_size = 0.002
+billboard = 2
+texture = ExtResource("8_kqdoj")
+
+[node name="Item5" type="Area3D" parent="Dialogue/Shop Scene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0476558, 0.648782, 5.30624)
+script = ExtResource("7_0dc1i")
+
+[node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = ExtResource("7_npkrc")
+
+[node name="Sprite" type="Sprite3D" parent="Dialogue/Shop Scene/Item5"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+pixel_size = 0.002
+billboard = 2
+texture = ExtResource("8_kqdoj")
+
+[node name="Item6" type="Area3D" parent="Dialogue/Shop Scene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.39083, 1.48675, -1.09049)
+script = ExtResource("7_0dc1i")
+
+[node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = ExtResource("7_npkrc")
+
+[node name="Sprite" type="Sprite3D" parent="Dialogue/Shop Scene/Item6"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+pixel_size = 0.002
+billboard = 2
+texture = ExtResource("8_kqdoj")
+
 [node name="Shopkeeper" type="Area3D" parent="Dialogue/Shop Scene"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.63, 1.095, -5.35)
+script = ExtResource("8_1d02x")
 
 [node name="Sprite" type="Sprite3D" parent="Dialogue/Shop Scene/Shopkeeper"]
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
@@ -141,8 +185,12 @@ volume_db = -10.0
 autoplay = true
 parameters/looping = true
 
+[connection signal="changeShopkeeperSprite" from="Dialogue" to="Dialogue/Shop Scene/Shopkeeper" method="_on_dialogue_change_shopkeeper_sprite"]
 [connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item1" method="_on_dialogue_load_resource"]
 [connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item2" method="_on_dialogue_load_resource"]
 [connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item3" method="_on_dialogue_load_resource"]
+[connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item4" method="_on_dialogue_load_resource"]
+[connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item5" method="_on_dialogue_load_resource"]
+[connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item6" method="_on_dialogue_load_resource"]
 [connection signal="advance" from="Dialogue/Player" to="Dialogue" method="_on_player_advance"]
 [connection signal="approach" from="Dialogue/Player" to="Dialogue" method="_on_player_approach"]

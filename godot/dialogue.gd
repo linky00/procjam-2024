@@ -8,6 +8,7 @@ extends Control
 @onready var ongoing_text = false
 
 signal loadResource(item:String, texture:Resource)
+signal changeShopkeeperSprite(texture:Resource)
 
 @onready var sprites = {
 	"vase1": load("res://sprites/vase1.png"),
@@ -30,10 +31,18 @@ signal loadResource(item:String, texture:Resource)
 	
 }
 
+@onready var shopkeeper_sprites = {
+	"standing": load("res://sprites/shopkeeper_1.png"),
+	"hand_up": load("res://sprites/shopkeeper_2.png")
+}
+
 var story_counts = {
 	"Item1": 0,
 	"Item2": 0,
 	"Item3": 0,
+	"Item4": 0,
+	"Item5": 0,
+	"Item6": 0,
 	"Default": 0
 }
 
@@ -52,7 +61,7 @@ func _ready():
 	history.generate_history()
 		
 	$TextArea.set_visible(false)
-	for i in range(3):
+	for i in range(6):
 		var item = history.get_item(i)
 		emit_signal("loadResource", "Item"+str(i+1), sprites[item.item_type])
 #		print(i)
@@ -77,19 +86,21 @@ func advance_text():
 	else:
 		$TextArea.set_visible(false)
 		ongoing_text = false
+		emit_signal("changeShopkeeperSprite", shopkeeper_sprites["standing"])
 	
 func _on_player_approach(item_name: String):
 	if ongoing_text:
 		advance_text()	
 	else:
 		if item_name == "Shopkeeper":
+			emit_signal("changeShopkeeperSprite", shopkeeper_sprites["hand_up"])
 			if last_item:
 				show_item_stories(last_item)
 			else:
 				show_text(default_stories[story_counts["Default"]])
 				
 				story_counts["Default"] += 1
-				if story_counts["Default"] > len(default_stories):
+				if story_counts["Default"] >= len(default_stories):
 					story_counts["Default"] = 0
 		else:
 			var item_num = int(item_name.substr(4)) - 1

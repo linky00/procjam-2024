@@ -11,13 +11,9 @@ use strfmt::strfmt;
 use std::fs::File;
 
 use serde_json::{Value};
+use stringcase::Caser;
 
 const MAX_WEAR_DESC: usize = 2;
-
-
-// possible item descriptions
-const TEAPOT_DESCRIPTIONS: &'static [&'static str] = &["A teapot 1.", "A teapot 2.", "A teapot 3."];
-const VASE_DESCRIPTIONS: &'static [&'static str] = &["A vase 1.", "A vase 2.", "A vase 3."];
 
 // possible wear descriptions
 const BRICABRAC_WEAR: &'static [&'static [&'static str]] = &[
@@ -42,6 +38,7 @@ const BRICABRAC_WEAR: &'static [&'static [&'static str]] = &[
         "home decor",
     ],
 ];
+
 const ACCESORIES_WEAR: &'static[&'static[&'static str]] = &[
     &[
         "This was once an eye-catching statement, but time has only been as kind to it as its owners.",
@@ -54,7 +51,13 @@ const ACCESORIES_WEAR: &'static[&'static[&'static str]] = &[
 // possible introduction lines in a story
 const STORY_INTROS: &'static [&'static str] = &["Let me think... It's been a while."];
 // possible ending lines in a story
-const STORY_OUTROS: &'static [&'static str] = &["I believe that's all that's known about that."];
+const STORY_OUTROS: &'static [&'static str] = &[
+    "I believe that's all that's known about that.", 
+    "I wish I knew more about this item, but so many things have been lost to time...",
+    "Such a fascinating history.",
+    "Not much more to say about this, really.",
+    "If there's another item you'd like to see, please let me know."
+];
 
 // possible event-specific lines for a story
 // FORMAT RULES:
@@ -66,11 +69,20 @@ const STORY_OUTROS: &'static [&'static str] = &["I believe that's all that's kno
 // write {old_owner_name} when applicable as a stand-in for the old owner during an item exchange event.
 // add 1 to the end of the pronoun placeholder as a stand-in for the pronouns of the old owner during an exchange event.
 // ex: {nominative_pronoun1} would be the nominative pronoun of the old owner.
+
 const CREATION_LINES: &'static [&'static [&'static str]] = &[&[
     "Gosh, you're really testing my memory now...",
     "I remember one of my... returning customers, briefly remarking on the subject.",
     "They believed it was created by this person called {owner_name} way back in the day, in {city_name}.",
     "As to why or how, your guess is as good as mine.",
+], &[
+    "You don't really see items like this anymore, right?",
+    "But back in {city_name} in the year {year}, they used to be a lot more common.",
+    "Some artisan by the name of {owner_name} created this particular piece according to the customs of the area.",
+    "Terrible pity what happened to {city_name}... although that's a different matter entirely."
+], &[
+    "You might find it interesting to know that {owner_name}, the creator of this item, was something of a local celebrity.",
+    "Of course, {nominative_pronoun} wasn't known much outside of {city_name}, but a lot of people in the city knew their work."
 ]];
 //
 const DEATH_LINES: &'static [&'static [&'static str]] = &[&[
@@ -79,11 +91,19 @@ const DEATH_LINES: &'static [&'static [&'static str]] = &[&[
 ]];
 const MOVE_LINES: &'static [&'static [&'static str]] = &[&[
     "Most people who could afford it moved to {city_name} when the calamity eventually hit. I believe {owner_name} did the same.",
+], &[
+    "Of course, {city_name} no longer exists, but back in {year} it was still thought of as a safe haven.",
+    "So {owner_name} decided to move there.",
+    "They didn't have room to bring much, but I guess something about this item called to them."
 ]];
-const EXCHANGE_LINES: &'static [&'static [&'static str]] = &[&[
+const EXCHANGE_LINES: &'static [&'static [&'static str]] = &[
+&[
     "Someone called \"{owner_name}\" stole it from {old_owner_name} while they were both sheltering inside an old, broken down mill on the outskirts of {city_name}.",
     "They apparently slept together for a couple of days.",
-    "I was told {nominative_pronoun} eventually decided to head away on some ungodly hour. {nominative_pronoun} never saw {old_owner_name} again after that."
+    "I was told {nominative_pronoun} eventually decided to head away at some ungodly hour. {nominative_pronoun} never saw {old_owner_name} again after that."
+], &[
+    "I actually think this item was given to {owner_name} as a gift.",
+    "By an old friend named {old_owner_name}, I believe?"
 ]];
 
 struct MyExtension;
@@ -108,8 +128,19 @@ fn get_item_types(item: &Item) -> (usize, usize, usize) {
         | ItemType::Teapot3
         | ItemType::Vase1
         | ItemType::Vase2
-        | ItemType::Vase3 => 0,
-        _ => 0,
+        | ItemType::Vase3
+        | ItemType::Cup1
+        | ItemType::Statue
+        | ItemType::Orb => 0,
+        
+        ItemType::Belt
+        | ItemType::Bracelet
+        | ItemType::Hat
+        | ItemType::Shoes1
+        | ItemType::Shoes2
+        | ItemType::Shoes3
+        | ItemType::Sunglasses
+        | ItemType::Necklace => 1,
     };
     let item_type_i: usize = match item.item_type {
         ItemType::Teapot1 | ItemType::Teapot2 | ItemType::Teapot3 => 0,
@@ -137,17 +168,8 @@ pub fn generate_description(item: &Item, item_types: (usize, usize, usize)) -> A
     godot_print!("opened file");
     let desc_json: Value = serde_json::from_reader(desc_file)
       .unwrap();
-    godot_print!("json file openes");
+    godot_print!("json file opened");
     godot_print!("{}", desc_json);
-    
-    // first desc
-    /*let first_desc: GString = match item.item_type {
-        ItemType::Teapot1 | ItemType::Teapot2 | ItemType::Teapot3 => {
-            TEAPOT_DESCRIPTIONS.get(item_types.2).expect("line 131")
-        }
-        ItemType::Vase1 | ItemType::Vase2 | ItemType::Vase3 => VASE_DESCRIPTIONS[item_types.2],
-    }
-    .into();*/
     
     let first_desc: GString = desc_json[item.item_type.to_string()].to_string().into();
     description.push(first_desc);
@@ -197,13 +219,13 @@ pub fn format_event_lines(
         .characters
         .get(&record.expect_owner())
         .expect("line 179");
-    format_vars.insert("owner_name".to_string(), owner.name.clone());
+    format_vars.insert("owner_name".to_string(), owner.name.clone().to_pascal_case());
     // insert city name
     let city = world
         .cities
         .get(&record.expect_location())
         .expect("line 182");
-    format_vars.insert("city_name".to_string(), city.name.clone());
+    format_vars.insert("city_name".to_string(), city.name.clone().to_pascal_case());
     // insert pronouns of owner
     format_vars.insert(
         "nominative_pronoun".to_string(),
@@ -223,7 +245,7 @@ pub fn format_event_lines(
             .characters
             .get(&event.characters[1])
             .expect("line 205");
-        format_vars.insert("old_owner_name".to_string(), old_owner.name.clone());
+        format_vars.insert("old_owner_name".to_string(), old_owner.name.clone().to_pascal_case());
         format_vars.insert(
             "nominative_pronoun1".to_string(),
             old_owner.pronouns.nominative.clone(),
@@ -241,7 +263,11 @@ pub fn format_event_lines(
     if event.event_type == EventType::EventMove {
         // TODO
     }
-
+    // add year
+    format_vars.insert(
+        "year".to_string(),
+        event.start_time.to_string()
+    );
     // format all lines
     for &line in lines {
         // format line

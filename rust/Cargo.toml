@@ -11,3 +11,4 @@ godot = { git = "https://github.com/godot-rust/gdext", branch = "master" }
 rand = "0.8.5"
 strfmt = "0.2.4"
 serde_json = "1.0"
+stringcase = "0.3.0"
