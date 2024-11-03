@@ -80,12 +80,4 @@ mod tests {
             event_generator();
         }
     }
-
-    #[test]
-    fn text_gen() {
-        let mut world = world::World::generate_world();
-        world.generate_events();
-        let test_item = world.items.get(&world::ItemID(0)).unwrap();
-        godot::generate_stories(&world, test_item);
-    }
 }

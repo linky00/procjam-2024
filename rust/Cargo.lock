@@ -196,6 +196,7 @@ version = "0.1.0"
 dependencies = [
  "godot",
  "rand",
+ "serde",
  "serde_json",
  "strfmt",
  "stringcase",

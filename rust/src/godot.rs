@@ -6,111 +6,37 @@ use godot::classes::Node;
 use godot::prelude::*;
 use rand::seq::SliceRandom;
 use rand::Rng;
+use serde::{Deserialize, Serialize};
 use strfmt::strfmt;
 
 use std::fs::File;
-
-use serde_json::Value;
 use stringcase::Caser;
 
 const MAX_WEAR_DESC: usize = 2;
 
-// possible wear descriptions
-const BRICABRAC_WEAR: &'static [&'static [&'static str]] = &[
-    &[
-        "It's cracked on {0}.",
-        "The {1} seem almost invisible from wear.",
-        "You can hear something shaking around inside the {2}.",
-        "You can see this once being a striking part of someone's {3}.",
-    ],
-    &[
-        // replacements for teapot
-        "the handle",
-        "ornamental patterns",
-        "porcelain",
-        "kitchenware",
-    ],
-    &[
-        // replacements for vase
-        "the mouth",
-        "embossings",
-        "clay",
-        "home decor",
-    ],
-];
+#[derive(Serialize, Deserialize)]
+struct WearDescs {
+    bricabrac_wear: Vec<Vec<String>>,
+    accessory_wear: Vec<Vec<String>>,
+}
 
-const ACCESORIES_WEAR: &'static[&'static[&'static str]] = &[
-    &[
-        "This was once an eye-catching statement, but time has only been as kind to it as its owners.",
-        "It has an odd smell.",
-        "Parts of it are... ash-y?"
-    ],
-    &[],
-];
+#[derive(Serialize, Deserialize)]
+struct EventLines {
+    creation_lines: Vec<Vec<String>>,
+    death_lines: Vec<Vec<String>>,
+    move_lines: Vec<Vec<String>>,
+    exchange_lines: Vec<Vec<String>>,
+    postmortem_exchange_lines: Vec<Vec<String>>,
+}
 
-// possible introduction lines in a story
-const STORY_INTROS: &'static [&'static str] = &["Let me think... It's been a while."];
-// possible ending lines in a story
-const STORY_OUTROS: &'static [&'static str] = &[
-    "I believe that's all that's known about that.",
-    "I wish I knew more about this item, but so many things have been lost to time...",
-    "Such a fascinating history.",
-    "Not much more to say about this, really.",
-    "If there's another item you'd like to see, please let me know.",
-];
-
-// possible event-specific lines for a story
-// FORMAT RULES:
-// write {owner_name} as a stand-in for the item's owner's name.
-// write {city_name} as a stand-in for the name of the city where item is.
-// write {nominative_pronoun} as a stand-in for a nominative pronoun for the owner (she, he, they...).
-// write {accusative_pronoun} as a stand-in for an accusative pronoun for the owner (her, him, them...).
-// write {dep_genitive_pronoun} as a stand-in for a dependent genitive pronoun for the owner (her, his, their...).
-// write {old_owner_name} when applicable as a stand-in for the old owner during an item exchange event.
-// add 1 to the end of the pronoun placeholder as a stand-in for the pronouns of the old owner during an exchange event.
-// ex: {nominative_pronoun1} would be the nominative pronoun of the old owner.
-
-const CREATION_LINES: &'static [&'static [&'static str]] = &[&[
-    "Gosh, you're really testing my memory now...",
-    "I remember one of my... returning customers, briefly remarking on the subject.",
-    "They believed it was created by this person called {owner_name} way back in the day, in {city_name}.",
-    "As to why or how, your guess is as good as mine.",
-], &[
-    "You don't really see items like this anymore, right?",
-    "But back in {city_name} in the year {year}, they used to be a lot more common.",
-    "Some artisan by the name of {owner_name} created this particular piece according to the customs of the area.",
-    "Terrible pity what happened to {city_name}... although that's a different matter entirely."
-], &[
-    "You might find it interesting to know that {owner_name}, the creator of this item, was something of a local celebrity.",
-    "Of course, {nominative_pronoun} wasn't known much outside of {city_name}, but a lot of people in the city knew their work."
-]];
-//
-const DEATH_LINES: &'static [&'static [&'static str]] = &[&[
-    "I think {nominative_pronoun} died in {city_name}, when the fires first hit.",
-    "What a shame.",
-]];
-const MOVE_LINES: &'static [&'static [&'static str]] = &[&[
-    "Most people who could afford it moved to {city_name} when the calamity eventually hit. I believe {owner_name} did the same.",
-], &[
-    "Of course, {city_name} no longer exists, but back in {year} it was still thought of as a safe haven.",
-    "So {owner_name} decided to move there.",
-    "They didn't have room to bring much, but I guess something about this item called to them."
-]];
-const EXCHANGE_LINES: &'static [&'static [&'static str]] = &[
-&[
-    "Someone called \"{owner_name}\" stole it from {old_owner_name} while they were both sheltering inside an old, broken down mill on the outskirts of {city_name}.",
-    "They apparently slept together for a couple of days.",
-    "I was told {nominative_pronoun} eventually decided to head away at some ungodly hour.",
-    "{nominative_pronoun} never saw {old_owner_name} again after that."
-], &[
-    "I actually think this item was given to {owner_name} as a gift.",
-    "By an old friend named {old_owner_name}, I believe?"
-]];
-
-const POSTMORTEM_EXCHANGE_LINES: &'static [&'static [&'static str]] = &[&[
-    "{owner_name} found it on the body of a dead person.",
-    "It was a bad time to be in {city_name}.",
-]];
+#[derive(Serialize, Deserialize)]
+pub struct DescJson {
+    initial_descriptions: HashMap<String, String>,
+    wear_descriptions: WearDescs,
+    story_intros: Vec<String>,
+    story_outros: Vec<String>,
+    event_lines: EventLines,
+}
 
 struct MyExtension;
 
@@ -165,29 +91,30 @@ fn get_item_types(item: &Item) -> (usize, usize, usize) {
     (item_supertype_i, item_type_i, item_subtype_i)
 }
 
-pub fn generate_description(item: &Item, item_types: (usize, usize, usize)) -> Array<GString> {
+pub fn generate_description(
+    item: &Item,
+    item_types: (usize, usize, usize),
+    descs: &DescJson,
+) -> Array<GString> {
     let mut rng = rand::thread_rng();
     let wear_desc_amt = rng.gen_range(0..=MAX_WEAR_DESC);
     let mut description: Array<GString> = Array::new();
 
-    let desc_file = File::open("descriptions.json").expect("opening descriptions file");
-    godot_print!("opened file");
-    let desc_json: Value = serde_json::from_reader(desc_file).unwrap();
-    godot_print!("json file opened");
-    godot_print!("{}", desc_json);
-
-    let first_desc: GString = desc_json[item.item_type.to_string()].to_string().into();
+    let first_desc: GString = descs.initial_descriptions[&item.item_type.to_string()]
+        .to_string()
+        .into();
     description.push(first_desc);
 
     // desc of wear
+    let wear_descs = &descs.wear_descriptions;
     let wear_list = match item_types.0 {
-        0 => BRICABRAC_WEAR,
-        1 => ACCESORIES_WEAR,
+        0 => &wear_descs.bricabrac_wear,
+        1 => &wear_descs.accessory_wear,
         _ => unreachable!(),
     };
     let mut wear_format_hashmap: HashMap<String, String> = HashMap::new();
     let mut i: usize = 0;
-    for &desc in wear_list
+    for desc in wear_list
         .get(item_types.1 + 1)
         .expect("the appropriate non-formatted wear description")
         .iter()
@@ -197,7 +124,7 @@ pub fn generate_description(item: &Item, item_types: (usize, usize, usize)) -> A
     }
     let wear_desc: Vec<GString> = wear_list[0]
         .choose_multiple(&mut rng, wear_desc_amt)
-        .map(|&desc| {
+        .map(|desc| {
             GString::from(
                 strfmt(desc, &wear_format_hashmap)
                     .expect("an appropriate wear description that's been formatted"),
@@ -219,7 +146,7 @@ pub fn get_records_from_time(records: &Vec<ItemMoveRecord>, time: usize) -> Vec<
 }
 
 pub fn format_event_lines(
-    lines: &'static [&'static str],
+    lines: &Vec<String>,
     world: &World,
     record: &ItemMoveRecord,
 ) -> Array<GString> {
@@ -289,7 +216,7 @@ pub fn format_event_lines(
     // add year
     format_vars.insert("year".to_string(), event.start_time.to_string());
     // format all lines
-    for &line in lines {
+    for line in lines {
         // format line
         let line_formatted = strfmt(line, &format_vars)
             .expect("one of the formatted lines of the story generated for this event");
@@ -301,7 +228,11 @@ pub fn format_event_lines(
     lines_gstring
 }
 
-pub fn generate_lines_from_event(world: &World, record: &ItemMoveRecord) -> Option<Array<GString>> {
+pub fn generate_lines_from_event(
+    world: &World,
+    record: &ItemMoveRecord,
+    descs: &DescJson,
+) -> Option<Array<GString>> {
     let event = world
         .events
         .get(
@@ -312,19 +243,25 @@ pub fn generate_lines_from_event(world: &World, record: &ItemMoveRecord) -> Opti
         .expect("the event obj of the event associated with the given record");
     match event.event_type {
         EventType::EventCreation(_) => {
-            let &lines = CREATION_LINES
+            let lines = descs
+                .event_lines
+                .creation_lines
                 .choose(&mut rand::thread_rng())
                 .expect("randomly chosen creation line");
             Some(format_event_lines(lines, world, record))
         }
         EventType::EventDeath => {
-            let &lines = DEATH_LINES
+            let lines = descs
+                .event_lines
+                .death_lines
                 .choose(&mut rand::thread_rng())
                 .expect("randomly chosen death line");
             Some(format_event_lines(lines, world, record))
         }
         EventType::EventMove => {
-            let &lines = MOVE_LINES
+            let lines = descs
+                .event_lines
+                .move_lines
                 .choose(&mut rand::thread_rng())
                 .expect("randomly chosen move line");
             Some(format_event_lines(lines, world, record))
@@ -340,11 +277,11 @@ pub fn generate_lines_from_event(world: &World, record: &ItemMoveRecord) -> Opti
                 .expect("the character struct for the encountered character")
                 .has_died(world);
             let const_lines = if is_postmortem_encounter {
-                POSTMORTEM_EXCHANGE_LINES
+                &descs.event_lines.postmortem_exchange_lines
             } else {
-                EXCHANGE_LINES
+                &descs.event_lines.exchange_lines
             };
-            let &lines = const_lines
+            let lines = const_lines
                 .choose(&mut rand::thread_rng())
                 .expect("randomly chosen exchange line");
             Some(format_event_lines(lines, world, record))
@@ -353,7 +290,7 @@ pub fn generate_lines_from_event(world: &World, record: &ItemMoveRecord) -> Opti
     }
 }
 
-pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
+pub fn generate_stories(world: &World, item: &Item, descs: &DescJson) -> Array<Gd<ItemStory>> {
     let mut stories: Array<Gd<ItemStory>> = Array::new();
     let records = &item.owner_records;
     let oldest_records = get_records_from_time(&records, 0);
@@ -373,11 +310,13 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
             oldest_records
                 .first()
                 .expect("oldest record pertaining to this item"),
+            descs,
         )
         .expect("lines generated for the oldest record associated with the given item"),
     );
     // choose an outro
-    let &outro = STORY_OUTROS
+    let outro = descs
+        .story_outros
         .choose(&mut rand::thread_rng())
         .expect("randomly chosen story outro");
     oldest_story_lines.push(&outro.into());
@@ -387,7 +326,7 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
     // generate in between stories
     for record_i in 1..(records.len() - 1) {
         let record = &records[record_i];
-        let lines_option = generate_lines_from_event(world, &record);
+        let lines_option = generate_lines_from_event(world, &record, descs);
         match lines_option {
             Some(lines) => stories.push(ItemStory::new(lines)),
             None => (),
@@ -397,7 +336,8 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
     // generate newest story, special dialogue for this
     let mut newest_story_lines: Array<GString> = Array::new();
     // choose an intro
-    let &intro = STORY_INTROS
+    let intro = descs
+        .story_intros
         .choose(&mut rand::thread_rng())
         .expect("randomly chosen story intro");
     newest_story_lines.push(&intro.into());
@@ -408,6 +348,7 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
             newest_records
                 .last()
                 .expect("newest record associated with the given item"),
+            &descs,
         )
         .expect("lines generated for the newest record associated with the given ite"),
     );
@@ -450,12 +391,14 @@ impl History {
         }
 
         // generate item data for each item
+        let desc_file = File::open("writing/descriptions.json").expect("opening descriptions file");
+        let descs: DescJson = serde_json::from_reader(desc_file).unwrap();
         let mut item_data: Array<Gd<ItemData>> = Array::new();
         for (_, item) in world_items.into_iter() {
             let item_types = get_item_types(item);
             let item_type_string = item.item_type.to_string();
-            let description = generate_description(item, item_types);
-            let stories = generate_stories(&self.world, item);
+            let description = generate_description(item, item_types, &descs);
+            let stories = generate_stories(&self.world, item, &descs);
 
             item_data.push(ItemData::new(item_type_string.into(), description, stories));
         }

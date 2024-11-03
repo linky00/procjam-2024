@@ -1,0 +1,123 @@
+
+{
+	"initial_descriptions": {
+		"teapot1": "A delicate teapot with an intricately woven handle.",
+		"teapot2": "An oddly-shaped teapot with a floral design.",
+		"teapot3": "A double-decker teapot.",
+		"vase1": "A squat vase whose design you can't quite place.",
+		"vase2": "A tall vase with a flared mouth.",
+		"vase3": "A worn vase.",
+		"belt1": "A well-loved leather belt.",
+		"bracelet1": "A delicate bracelet studded with gemstones.",
+		"cup1": "A cup emblazoned with glyphs that  you don't recognise.",
+		"hat1": "A pink floral hat.",
+		"orb1": "A smooth orb with a mysterious aura.",
+		"shoes1": "A pair of high-heeled shoes with split toes.",
+		"shoes2": "A pair of high-heeled shoes with split toes.",
+		"shoes3": "A well-loved pair of shoes.",
+		"statue1": "A statue in the shape of an angel, its intricately carved head in its hands.",
+		"sunglasses1": "An old pair of sunglasses.",
+		"necklace1": "A necklace adorned with precious stones."
+	},
+
+	"wear_descriptions": {
+		"bricabrac_wear": [
+			[
+				"It's cracked on {0}.",
+				"The {1} seem almost invisible from wear.",
+				"You can hear something shaking around inside the {2}.",
+				"You can see this once being a striking part of someone's {3}."
+			],
+			[
+				"the handle",
+				"ornamental patterns",
+				"porcelain",
+				"kitchenware"
+			],
+			[
+				"the mouth",
+				"embossings",
+				"clay",
+				"home decor"
+			]
+		],
+		"accessory_wear": [
+			[
+				"This was once an eye-catching statement, but time has only been as kind to it as its owners.",
+				"It has an odd smell.",
+				"Parts of it are... ash-y?"
+			],
+			[]
+		]
+	},
+	"story_intros": [
+		"Let me think... It's been a while."
+	],
+	"story_outros": [
+		"I believe that's all that's known about that.",
+		"I wish I knew more about this item, but so many things have been lost to time...",
+		"Such a fascinating history.",
+		"Not much more to say about this, really.",
+		"If there's another item you'd like to see, please let me know."
+	],
+
+	
+	"_format_rules": [
+		"This element is just to explain how the formatting syntax seen below works to anyone adding new lines.",
+		"{owner_name}: the item's owner's name.",
+		"{city_name}: the name of the city where the item is.",
+		"{year}: the year the event takes place in",
+		"{nominative_pronoun}: a nominative pronoun for the owner of the item after the event (she, he, they...).",
+		"{accusative_pronoun}: an accusative pronoun for the owner of the item after the event (her, him, them...).",
+		"{dep_genitive_pronoun}: a dependent genitive pronoun for the owner of the item after the event (her, his, their...).",
+		"{old_owner_name} when applicable: the old owner of the item before an item exchange event.",
+		"add 1 to the end of the pronoun placeholder as a stand-in for the pronouns of the old owner during an exchange event.",
+		"ex: {nominative_pronoun1} would be the nominative pronoun of the old owner."
+	],
+	"event_lines": {
+		"creation_lines": [
+			[
+				"Gosh, you're really testing my memory now...",
+				"I remember one of my... returning customers, briefly remarking on the subject.",
+				"They believed it was created by this person called {owner_name} way back in the day, in {city_name}.",
+				"As to why or how, your guess is as good as mine."
+			],
+			[
+				"You don't really see items like this anymore, right?",
+				"But back in {city_name} in the year {year}, they used to be a lot more common.",
+				"Some artisan by the name of {owner_name} created this particular piece according to the customs of the area.",
+				"Terrible pity what happened to {city_name}... although that's a different matter entirely."
+			],
+			[
+				"You might find it interesting to know that {owner_name}, the creator of this item, was something of a local celebrity.",
+    			"Of course, {nominative_pronoun} wasn't known much outside of {city_name}, but a lot of people in the city knew their work."
+			]
+		],
+		"death_lines": [
+			[
+				"I think {nominative_pronoun} died in {city_name}, when the fires first hit.",
+    			"What a shame."
+			]
+		],
+		"move_lines": [
+			[
+				"Most people who could afford it moved to {city_name} when the calamity eventually hit.",
+				"I believe {owner_name} did the same."
+			]
+		],
+		"exchange_lines": [
+			[
+				"Someone called \"{owner_name}\" stole it from {old_owner_name} while they were both sheltering inside an old, broken down mill on the outskirts of {city_name}.",
+				"They apparently slept together for a couple of days.",
+				"I was told {nominative_pronoun} eventually decided to head away at some ungodly hour.",
+				"{nominative_pronoun} never saw {old_owner_name} again after that."
+			]
+		],
+		"postmortem_exchange_lines": [
+			[
+				"{owner_name} found it on the body of a dead person.",
+    			"It was a bad time to be in {city_name}."
+			]
+		]
+	}
+}
