@@ -16,10 +16,8 @@ signal loadResource(item:String, texture:Resource)
 }
 
 func _ready():
-	for i in range(100):
-		history.generate_history()
+	history.generate_history()
 		
-	print("")
 	for i in range(3):
 		print(i)
 		var item = history.get_item(i)

@@ -70,15 +70,15 @@ const CREATION_LINES: &'static [&'static [&'static str]] = &[&[
 //
 const DEATH_LINES: &'static [&'static [&'static str]] = &[&[
     "I think {nominative_pronoun} died in {city_name}, when the fires first hit.",
-    "What a shame. Had {nominative_pronoun} survived, I'm certain we'd have much to tell each other.",
+    "What a shame.",
 ]];
 const MOVE_LINES: &'static [&'static [&'static str]] = &[&[
-    "Like most people who could afford to, {nominative_pronoun} moved to {city_name} when the calamity eventually hit.",
+    "Most people who could afford it moved to {city_name} when the calamity eventually hit. I believe {owner_name} did the same.",
 ]];
 const EXCHANGE_LINES: &'static [&'static [&'static str]] = &[&[
-    "{owner_name} says {nominative_pronoun} stole it from someone called \"{old_owner_name}\" while they were both sheltering inside an old, broken down mill on the outskirts of {city_name}.",
-    "I believe {accusative_pronoun}. They apparently slept together for a couple of days.",
-    "I was told {nominative_pronoun} eventually decided to head away on some ungodly hour, and never saw {accusative_pronoun1} again in {dep_genitive_pronoun} waking life."
+    "Someone called \"{owner_name}\" stole it from {old_owner_name} while they were both sheltering inside an old, broken down mill on the outskirts of {city_name}.",
+    "They apparently slept together for a couple of days.",
+    "I was told {nominative_pronoun} eventually decided to head away on some ungodly hour. {nominative_pronoun} never saw {old_owner_name} again after that."
 ]];
 
 struct MyExtension;
@@ -301,8 +301,6 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
 
     // generate in between stories
     for record_i in 1..(records.len() - 1) {
-        godot_print!("{}", record_i);
-        godot_print!("{}", records.len());
         let record = &records[record_i];
         let lines_option = generate_lines_from_event(world, &record);
         match lines_option {
@@ -335,8 +333,31 @@ impl History {
     #[func]
     fn generate_history(&mut self) {
         // generate events
+        godot_print!("Generating events...");
         self.world.generate_events();
+        godot_print!("Done generating events");
+
+        // print item events for debugging
         let world_items = &self.world.items;
+        godot_print!("\nItem Event Display:");
+        for (item_id, item) in world_items {
+            godot_print!("-------------------------");
+            godot_print!(
+                "Item #{:?} (of type {:?})'s events:",
+                item_id,
+                item.item_type
+            );
+
+            for record in &item.owner_records {
+                match record.event {
+                    Some(event_id) => {
+                        let &ref event = self.world.events.get(&event_id).unwrap();
+                        godot_print!("event #{:?}: {:?},", event_id, event.summary);
+                    }
+                    _ => (),
+                }
+            }
+        }
 
         // generate item data for each item
         let mut item_data: Array<Gd<ItemData>> = Array::new();
