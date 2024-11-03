@@ -1,80 +1,117 @@
 
 {
-	"initial_descriptions": {
-		"teapot1": "A delicate teapot with an intricately woven handle.",
-		"teapot2": "An oddly-shaped teapot with a floral design.",
-		"teapot3": "A double-decker teapot.",
-		"vase1": "A squat vase whose design you can't quite place.",
-		"vase2": "A tall vase with a flared mouth.",
-		"vase3": "A worn vase.",
-		"belt1": "A well-loved leather belt.",
-		"bracelet1": "A delicate bracelet studded with gemstones.",
-		"cup1": "A cup emblazoned with glyphs that  you don't recognise.",
-		"hat1": "A pink floral hat.",
-		"orb1": "A smooth orb with a mysterious aura.",
-		"shoes1": "A pair of high-heeled shoes with split toes.",
-		"shoes2": "A pair of high-heeled shoes with split toes.",
-		"shoes3": "A well-loved pair of shoes.",
-		"statue1": "A statue in the shape of an angel, its intricately carved head in its hands.",
-		"sunglasses1": "An old pair of sunglasses.",
-		"necklace1": "A necklace adorned with precious stones."
-	},
+    "initial_descriptions": {
+        "teapot1": "A delicate teapot with an intricately woven handle.",
+        "teapot2": "A handcrafted clay teapot with a floral design.",
+        "teapot3": "A double-decker copper teapot with wooden handles.",
+        "vase1": "A squat hand-painted vase.",
+        "vase2": "A tall vase with a flared mouth.",
+        "vase3": "A worn vase with inscriptions in a language you do not recognise.",
+        "belt1": "A well-loved leather belt.",
+        "bracelet1": "A delicate bracelet studded with rubies.",
+        "cup1": "A cup emblazoned with glyphs you do not recognise.",
+        "hat1": "A pink cloche hat made of wool.",
+        "shoes1": "A pair of high-heeled shoes with split toes.",
+        "shoes3": "A well-loved pair of leather shoes.",
+        "statue1": "A statue in the shape of an angel, its intricately carved head in its hands.",
+        "sunglasses1": "An old pair of sunglasses with blue accents.",
+        "necklace1": "A silver necklace adorned with sunstones."
+    },
 
 	"wear_descriptions": {
 		"bricabrac_wear": [
 			[
-				"It's cracked on {0}.",
+				"It's cracked {0}.",
 				"The {1} seem almost invisible from wear.",
 				"You can hear something shaking around inside the {2}.",
 				"You can see this once being a striking part of someone's {3}."
 			],
 			[
-				"the handle",
+				"on the handle",
 				"ornamental patterns",
 				"porcelain",
 				"kitchenware"
 			],
-			[
-				"the mouth",
-				"embossings",
-				"clay",
-				"home decor"
+            [
+				"on the handle",
+				"hand-painted details",
+				"earthenware",
+				"altar"
+			],
+            [
+				"in the middle",
+				"inscriptions",
+				"pottery",
+				"kitchenware"
+			],
+            [
+				"around the sides",
+				"inked details",
+				"ceramic",
+				"personal collection"
+			],
+            [
+				"inside",
+				"brushed texture",
+				"crockery",
+				"kitchen collection"
 			]
 		],
 		"accessory_wear": [
 			[
 				"This was once an eye-catching statement, but time has only been as kind to it as its owners.",
 				"It has an odd smell.",
-				"Parts of it are... ash-y?"
+				"Parts of it are... ash-y?",
+				"Years of wear... almost transforms the item into something else.",
+				"This one has gathered enough dust to last a lifetime.",
+				"Stylish... for a past era perhaps."
 			],
 			[]
 		]
 	},
 	"story_intros": [
-		"Let me think... It's been a while."
+		"Let me think... It's been a while.",
+		"This one, huh?",
+		"Ah, one of my personal favourites.",
+		"Time for a journey through time.",
+		"Interesting one, isn't it?",
+		"This one that sparked your interest...",
+		"I can't tell you much about its make but...",
+		"Boring old one, that one.",
+		"Let us see... What can I say about this one...",
+		"Hmm now...",
+		"Let me tell you the story behind this one.",
+		"The origin of this one... very fascinating indeed.",
+		"Hmm... This one is..."
 	],
 	"story_outros": [
 		"I believe that's all that's known about that.",
 		"I wish I knew more about this item, but so many things have been lost to time...",
 		"Such a fascinating history.",
 		"Not much more to say about this, really.",
-		"If there's another item you'd like to see, please let me know."
-	],
-
-	
-	"_format_rules": [
-		"This element is just to explain how the formatting syntax seen below works to anyone adding new lines.",
-		"{owner_name}: the item's owner's name.",
-		"{city_name}: the name of the city where the item is.",
-		"{year}: the year the event takes place in",
-		"{nominative_pronoun}: a nominative pronoun for the owner of the item after the event (she, he, they...).",
-		"{accusative_pronoun}: an accusative pronoun for the owner of the item after the event (her, him, them...).",
-		"{dep_genitive_pronoun}: a dependent genitive pronoun for the owner of the item after the event (her, his, their...).",
-		"{old_owner_name} when applicable: the old owner of the item before an item exchange event.",
-		"add 1 to the end of the pronoun placeholder as a stand-in for the pronouns of the old owner during an exchange event.",
-		"ex: {nominative_pronoun1} would be the nominative pronoun of the old owner."
+		"If there's another item you'd like to see, please let me know.",
+		"Let us move onto another one.",
+		"That is enough about that one.",
+		"Hmm. I have said all that I can on this.",
+		"Ah, that's about it for this one.",
+		"Interesting, isn't it...",
+		"Enough. Let me move on to another one.",
+		"Not that fascinating, if you ask me."
 	],
 	"event_lines": {
+		"_format_rules": [
+			"This element is just to explain how the formatting syntax seen below works to anyone adding new lines.",
+			"{owner_name}: the item's owner's name.",
+			"{city_name}: the name of the city where the item is.",
+			"{year}: the year the event takes place in",
+			"{nominative_pronoun}: a nominative pronoun for the owner of the item after the event (she, he, they...).",
+			"{accusative_pronoun}: an accusative pronoun for the owner of the item after the event (her, him, them...).",
+			"{dep_genitive_pronoun}: a dependent genitive pronoun for the owner of the item after the event (her, his, their...).",
+			"{old_owner_name} when applicable: the old owner of the item before an item exchange event.",
+			"add 1 to the end of the pronoun placeholder as a stand-in for the pronouns of the old owner during an exchange event.",
+			"ex: {nominative_pronoun1} would be the nominative pronoun of the old owner."
+
+		],
 		"creation_lines": [
 			[
 				"Gosh, you're really testing my memory now...",
