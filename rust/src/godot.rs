@@ -19,14 +19,14 @@ const MAX_WEAR_DESC: usize = 2;
 const BRICABRAC_WEAR: &'static [&'static [&'static str]] = &[
     &[
         "It's cracked on {0}.",
-        "The {1}, having been worn down with time and wear, seem almost invisible.",
+        "The {1} seem almost invisible from wear.",
         "You can hear something shaking around inside the {2}.",
         "You can see this once being a striking part of someone's {3}.",
     ],
     &[
         // replacements for teapot
         "the handle",
-        "ornamental colors",
+        "ornamental patterns",
         "porcelain",
         "kitchenware",
     ],
