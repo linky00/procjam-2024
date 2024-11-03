@@ -112,11 +112,6 @@ const POSTMORTEM_EXCHANGE_LINES: &'static [&'static [&'static str]] = &[&[
     "It was a bad time to be in {city_name}.",
 ]];
 
-const POSTMORTEM_EXCHANGE_LINES: &'static [&'static [&'static str]] = &[&[
-    "{owner_name} found it on the body of a dead person.",
-    "It was a bad time to be in {city_name}.",
-]];
-
 struct MyExtension;
 
 #[gdextension]
