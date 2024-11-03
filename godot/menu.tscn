@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://ipgq1yqiv3kk" path="res://ui/enter_hover.png" id="3_q3g3e"]
 [ext_resource type="Texture2D" uid="uid://dsujgk1cevfnx" path="res://ui/hyper_01.png" id="4_8oq2n"]
 [ext_resource type="Texture2D" uid="uid://c2udk685sphl8" path="res://ui/hyper_02.png" id="4_m4v8q"]
-[ext_resource type="AudioStream" uid="uid://oeh65wk0exee" path="res://audio/after the dust has settled.mp3" id="6_h888o"]
+[ext_resource type="AudioStream" uid="uid://yfg6q3etkwgg" path="res://audio/after the dust has settled.mp3" id="6_h888o"]
 
 [sub_resource type="Theme" id="Theme_ii4je"]
 
@@ -117,7 +117,7 @@ stretch_mode = 5
 
 [node name="AfterTheDustHasSettled" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_h888o")
-volume_db = 0.455
+volume_db = -10.0
 autoplay = true
 
 [connection signal="pressed" from="EnterButtonContainer/EnterButton" to="." method="_on_enter_button_pressed"]
