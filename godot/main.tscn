@@ -72,7 +72,7 @@ billboard = 2
 texture = ExtResource("3_6o14m")
 
 [node name="Item1" type="Area3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.925001, -4.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.168311, 1.03031, -3.93739)
 script = ExtResource("7_0dc1i")
 
 [node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item1"]
@@ -85,7 +85,7 @@ billboard = 2
 texture = ExtResource("8_kqdoj")
 
 [node name="Item2" type="Area3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.583171, 0.925001, -0.201468)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.583171, 0.925001, 0.804537)
 script = ExtResource("7_0dc1i")
 
 [node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item2"]
@@ -98,7 +98,7 @@ billboard = 2
 texture = ExtResource("8_kqdoj")
 
 [node name="Item3" type="Area3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.95463, 0.925001, -4.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.85028, 0.925001, -4.39111)
 script = ExtResource("7_0dc1i")
 
 [node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item3"]
@@ -111,7 +111,7 @@ billboard = 2
 texture = ExtResource("8_kqdoj")
 
 [node name="Player" type="CharacterBody3D" parent="Dialogue"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.99629, 1.00235, 0.210234)
+transform = Transform3D(0.166769, 0, 0.985996, 0, 1, 0, -0.985996, 0, 0.166769, 0.0634668, 1.00235, -2.81146)
 script = ExtResource("5_u2e41")
 
 [node name="PlayerHitbox" type="CollisionShape3D" parent="Dialogue/Player"]
@@ -128,7 +128,8 @@ debug_shape_thickness = 5
 
 [node name="CuriouserAndCuriouser" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("8_b4613")
-volume_db = -7.0
+volume_db = -10.0
+autoplay = true
 parameters/looping = true
 
 [connection signal="loadResource" from="Dialogue" to="Dialogue/Shop Scene/Item1" method="_on_dialogue_load_resource"]

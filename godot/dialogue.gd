@@ -21,23 +21,33 @@ signal loadResource(item:String, texture:Resource)
 var story_counts = {
 	"Item1": 0,
 	"Item2": 0,
-	"Item3": 0	
+	"Item3": 0,
+	"Default": 0
 }
+
+var default_stories = [
+	[
+		"Welcome to my shop! Feel free to have a look around."
+	], [
+		"If you see anything that catches your eye, please don't hesitate to come speak to me.",
+		"I can't promise I remember everything about all of these items, but I'm always happy to give it my best shot."
+	]
+]
 
 func _ready():
 	history.generate_history()
 		
 	$TextArea.set_visible(false)
 	for i in range(3):
-		print(i)
 		var item = history.get_item(i)
-		print(item.item_type)
-		print(item.description)
-		for story in item.stories:
-			print(story.lines)
-		print("Item"+str(i+1))
 		emit_signal("loadResource", "Item"+str(i+1), sprites[item.item_type])
-	
+#		print(i)
+
+#		print(item.item_type)
+#		print(item.description)
+#		for story in item.stories:
+#			print(story.lines)
+#		print("Item"+str(i+1))
 
 func show_text(new_text: Array):
 	text = new_text
@@ -66,7 +76,7 @@ func _on_player_approach(item_name: String):
 		show_text(item.stories[i].lines)
 		
 		story_counts[item_name] += 1
-		if story_counts[item_name] >= item.stories.size():
+		if story_counts[item_name] >= len(item.stories):
 			story_counts[item_name] = 0
 		
 	else:
@@ -77,5 +87,6 @@ func _on_player_advance() -> void:
 	if ongoing_text:
 		advance_text()
 	else:
-		print(history)
-		show_text(["Welcome to my shop!",  "Feel free to look around."])
+		if story_counts["Default"] < len(default_stories):
+			show_text(default_stories[story_counts["Default"]])
+			story_counts["Default"] += 1
