@@ -886,6 +886,17 @@ pub enum ItemType {
     Vase1,
     Vase2,
     Vase3,
+    Belt,
+    Bracelet,
+    Cup1,
+    Hat,
+    Orb,
+    Shoes1,
+    Shoes2,
+    Shoes3,
+    Statue,
+    Sunglasses,
+    Necklace
 }
 
 impl std::fmt::Display for ItemType {
@@ -897,11 +908,22 @@ impl std::fmt::Display for ItemType {
             ItemType::Vase1 => write!(f, "vase1"),
             ItemType::Vase2 => write!(f, "vase2"),
             ItemType::Vase3 => write!(f, "vase3"),
+            ItemType::Belt => write!(f, "belt1"),
+            ItemType::Bracelet => write!(f, "bracelet1"),
+            ItemType::Cup1 => write!(f, "cup1"),
+            ItemType::Hat => write!(f, "hat1"),
+            ItemType::Orb => write!(f, "orb1"),
+            ItemType::Shoes1 => write!(f, "shoes1"),
+            ItemType::Shoes2 => write!(f, "shoes2"),
+            ItemType::Shoes3 => write!(f, "shoes3"),
+            ItemType::Statue => write!(f, "statue1"),
+            ItemType::Sunglasses => write!(f, "sunglasses1"),
+            ItemType::Necklace => write!(f, "necklace1")
         }
     }
 }
 
-const NUM_ITEM_TYPES: usize = 6; // number of item types
+const NUM_ITEM_TYPES: usize = 17; // number of item types
 const LIST_ITEM_TYPES: [ItemType; NUM_ITEM_TYPES] = [
     ItemType::Teapot1,
     ItemType::Teapot2,
@@ -909,6 +931,17 @@ const LIST_ITEM_TYPES: [ItemType; NUM_ITEM_TYPES] = [
     ItemType::Vase1,
     ItemType::Vase2,
     ItemType::Vase3,
+    ItemType::Belt,
+    ItemType::Bracelet,
+    ItemType::Cup1,
+    ItemType::Hat,
+    ItemType::Orb,
+    ItemType::Shoes1,
+    ItemType::Shoes2,
+    ItemType::Shoes3,
+    ItemType::Statue,
+    ItemType::Sunglasses,
+    ItemType::Necklace
 ];
 
 impl ItemType {

@@ -8,7 +8,12 @@ use rand::seq::SliceRandom;
 use rand::Rng;
 use strfmt::strfmt;
 
+use std::fs::File;
+
+use serde_json::{Value};
+
 const MAX_WEAR_DESC: usize = 2;
+
 
 // possible item descriptions
 const TEAPOT_DESCRIPTIONS: &'static [&'static str] = &["A teapot 1.", "A teapot 2.", "A teapot 3."];
@@ -104,10 +109,12 @@ fn get_item_types(item: &Item) -> (usize, usize, usize) {
         | ItemType::Vase1
         | ItemType::Vase2
         | ItemType::Vase3 => 0,
+        _ => 0,
     };
     let item_type_i: usize = match item.item_type {
         ItemType::Teapot1 | ItemType::Teapot2 | ItemType::Teapot3 => 0,
         ItemType::Vase1 | ItemType::Vase2 | ItemType::Vase3 => 1,
+        _ => 0,
     };
     let mut item_subtype_i: usize = item_type_string
         .chars()
@@ -125,15 +132,24 @@ pub fn generate_description(item: &Item, item_types: (usize, usize, usize)) -> A
     let mut rng = rand::thread_rng();
     let wear_desc_amt = rng.gen_range(0..=MAX_WEAR_DESC);
     let mut description: Array<GString> = Array::new();
-
+    
+    let desc_file = File::open("descriptions.json").expect("opening descriptions file");
+    godot_print!("opened file");
+    let desc_json: Value = serde_json::from_reader(desc_file)
+      .unwrap();
+    godot_print!("json file openes");
+    godot_print!("{}", desc_json);
+    
     // first desc
-    let first_desc: GString = match item.item_type {
+    /*let first_desc: GString = match item.item_type {
         ItemType::Teapot1 | ItemType::Teapot2 | ItemType::Teapot3 => {
             TEAPOT_DESCRIPTIONS.get(item_types.2).expect("line 131")
         }
         ItemType::Vase1 | ItemType::Vase2 | ItemType::Vase3 => VASE_DESCRIPTIONS[item_types.2],
     }
-    .into();
+    .into();*/
+    
+    let first_desc: GString = desc_json[item.item_type.to_string()].to_string().into();
     description.push(first_desc);
 
     // desc of wear

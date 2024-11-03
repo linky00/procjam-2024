@@ -6,4 +6,5 @@ func _ready() -> void:
 
 func _on_dialogue_load_resource(item: String, texture: Resource) -> void:
 	if name == item:
+		$Sprite.offset.y = texture.get_height()/2
 		$Sprite.texture = texture

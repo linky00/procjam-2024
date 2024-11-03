@@ -6,7 +6,7 @@
 [ext_resource type="FontFile" uid="uid://wluo4drj5mww" path="res://fonts/Underdog-Regular.ttf" id="2_sit0v"]
 [ext_resource type="Texture2D" uid="uid://clqeul4aqaoay" path="res://sprites/shopkeeper_1.png" id="3_6o14m"]
 [ext_resource type="Script" path="res://movement.gd" id="5_u2e41"]
-[ext_resource type="Shape3D" uid="uid://iatsgw107br" path="res://ui/capsule.tres" id="6_uqep8"]
+[ext_resource type="Shape3D" uid="uid://iatsgw107br" path="res://capsule.tres" id="6_uqep8"]
 [ext_resource type="Script" path="res://item.gd" id="7_0dc1i"]
 [ext_resource type="Shape3D" uid="uid://cjbduiyaskdb" path="res://sphere.tres" id="7_npkrc"]
 [ext_resource type="AudioStream" uid="uid://cecpd4klnlswp" path="res://audio/curiouser and curiouser.mp3" id="8_b4613"]
@@ -66,16 +66,12 @@ autowrap_mode = 3
 
 [node name="Shop Scene" parent="Dialogue" instance=ExtResource("2_emcu1")]
 
-[node name="Shopkeeper" type="Sprite3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -0.986842, 1.0629, -5.05107)
-billboard = 2
-texture = ExtResource("3_6o14m")
-
 [node name="Item1" type="Area3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.168311, 1.03031, -3.93739)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.529254, 1.12044, -0.264433)
 script = ExtResource("7_0dc1i")
 
 [node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 shape = ExtResource("7_npkrc")
 
 [node name="Sprite" type="Sprite3D" parent="Dialogue/Shop Scene/Item1"]
@@ -85,10 +81,11 @@ billboard = 2
 texture = ExtResource("8_kqdoj")
 
 [node name="Item2" type="Area3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.583171, 0.925001, 0.804537)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.583171, 0.702007, 0.804537)
 script = ExtResource("7_0dc1i")
 
 [node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 shape = ExtResource("7_npkrc")
 
 [node name="Sprite" type="Sprite3D" parent="Dialogue/Shop Scene/Item2"]
@@ -98,10 +95,11 @@ billboard = 2
 texture = ExtResource("8_kqdoj")
 
 [node name="Item3" type="Area3D" parent="Dialogue/Shop Scene"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.85028, 0.925001, -4.39111)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.76524, 0.703872, -4.35254)
 script = ExtResource("7_0dc1i")
 
 [node name="Hitbox" type="CollisionShape3D" parent="Dialogue/Shop Scene/Item3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 shape = ExtResource("7_npkrc")
 
 [node name="Sprite" type="Sprite3D" parent="Dialogue/Shop Scene/Item3"]
@@ -109,6 +107,17 @@ transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
 pixel_size = 0.002
 billboard = 2
 texture = ExtResource("8_kqdoj")
+
+[node name="Shopkeeper" type="Area3D" parent="Dialogue/Shop Scene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.63, 1.095, -5.35)
+
+[node name="Sprite" type="Sprite3D" parent="Dialogue/Shop Scene/Shopkeeper"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+billboard = 2
+texture = ExtResource("3_6o14m")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Dialogue/Shop Scene/Shopkeeper"]
+shape = ExtResource("6_uqep8")
 
 [node name="Player" type="CharacterBody3D" parent="Dialogue"]
 transform = Transform3D(0.166769, 0, 0.985996, 0, 1, 0, -0.985996, 0, 0.166769, 0.0634668, 1.00235, -2.81146)

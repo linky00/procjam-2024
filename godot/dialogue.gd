@@ -15,7 +15,19 @@ signal loadResource(item:String, texture:Resource)
 	"vase3": load("res://sprites/vase3.png"),
 	"teapot1": load("res://sprites/teapot1.png"),
 	"teapot2": load("res://sprites/teapot2.png"),
-	"teapot3": load("res://sprites/teapot3.png")
+	"teapot3": load("res://sprites/teapot3.png"),
+	"belt1": load("res://sprites/belt.png"),
+	"bracelet1": load("res://sprites/bracelet.png"),
+	"cup1": load("res://sprites/cup1.png"),
+	"hat1": load("res://sprites/hat.png"),
+	"orb1": load("res://sprites/orb.png"),
+	"shoes1": load("res://sprites/shoes1.png"),
+	"shoes2": load("res://sprites/shoes2.png"),
+	"shoes3": load("res://sprites/shoes3.png"),
+	"statue1": load("res://sprites/statue.png"),
+	"sunglasses1": load("res://sprites/sunglasses.png"),
+	"necklace1" :load("res://sprites/necklace.png")
+	
 }
 
 var story_counts = {
@@ -24,6 +36,8 @@ var story_counts = {
 	"Item3": 0,
 	"Default": 0
 }
+
+var last_item = null
 
 var default_stories = [
 	[
@@ -65,28 +79,43 @@ func advance_text():
 		ongoing_text = false
 	
 func _on_player_approach(item_name: String):
-	if not ongoing_text:
-		var item_num = int(item_name.substr(4)) - 1
-		var item = history.get_item(item_num)
-		
-		var i = item.stories.size() - 1 - story_counts[item_name]
-		print(i)
-		print(item.stories[i].lines)
-		
-		show_text(item.stories[i].lines)
-		
-		story_counts[item_name] += 1
-		if story_counts[item_name] >= len(item.stories):
-			story_counts[item_name] = 0
-		
+	if ongoing_text:
+		advance_text()	
 	else:
-		advance_text()
+		if item_name == "Shopkeeper":
+			if last_item:
+				show_item_stories(last_item)
+			else:
+				show_text(default_stories[story_counts["Default"]])
+				
+				story_counts["Default"] += 1
+				if story_counts["Default"] > len(default_stories):
+					story_counts["Default"] = 0
+		else:
+			var item_num = int(item_name.substr(4)) - 1
+			var item = history.get_item(item_num)
+			
+			show_text(item.description + ["Maybe you could ask the shopkeeper about this item..."])
+			last_item = item_name
 
+
+func show_item_stories(item_name: String):
+	var item_num = int(item_name.substr(4)) - 1
+	var item = history.get_item(item_num)
+	
+	var i = item.stories.size() - 1 - story_counts[item_name]
+	print(i)
+	print(item.stories[i].lines)
+	
+	if story_counts[item_name] == 0:
+		show_text(["I see you're interested in the "+item_name+",,,"]+item.stories[i].lines)
+	else:
+		show_text(item.stories[i].lines)
+	
+	story_counts[item_name] += 1
+	if story_counts[item_name] >= len(item.stories):
+		story_counts[item_name] = 0
 
 func _on_player_advance() -> void:
 	if ongoing_text:
 		advance_text()
-	else:
-		if story_counts["Default"] < len(default_stories):
-			show_text(default_stories[story_counts["Default"]])
-			story_counts["Default"] += 1
