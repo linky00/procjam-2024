@@ -785,6 +785,17 @@ impl Character {
         }
     }
 
+    pub fn has_died(&self, world: &World) -> bool {
+        let death_events: Vec<&Event> = self
+            .events
+            .iter()
+            .map(|event_id| world.events.get(event_id).unwrap())
+            .filter(|&event| event.event_type == EventType::EventDeath)
+            .collect();
+
+        !death_events.is_empty()
+    }
+
     pub fn new() -> Self {
         Character {
             name: Self::name_gen(),

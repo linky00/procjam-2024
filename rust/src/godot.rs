@@ -81,6 +81,11 @@ const EXCHANGE_LINES: &'static [&'static [&'static str]] = &[&[
     "I was told {nominative_pronoun} eventually decided to head away on some ungodly hour. {nominative_pronoun} never saw {old_owner_name} again after that."
 ]];
 
+const POSTMORTEM_EXCHANGE_LINES: &'static [&'static [&'static str]] = &[&[
+    "{owner_name} found it on the body of a dead person.",
+    "It was a bad time to be in {city_name}.",
+]];
+
 struct MyExtension;
 
 #[gdextension]
@@ -127,14 +132,17 @@ pub fn generate_description(item: &Item, item_types: (usize, usize, usize)) -> A
     let mut description: Array<GString> = Array::new();
 
     // first desc
-    let first_desc: GString = match item.item_type {
-        ItemType::Teapot1 | ItemType::Teapot2 | ItemType::Teapot3 => {
-            TEAPOT_DESCRIPTIONS.get(item_types.2).expect("line 131")
-        }
-        ItemType::Vase1 | ItemType::Vase2 | ItemType::Vase3 => VASE_DESCRIPTIONS[item_types.2],
-    }
-    .into();
-    description.push(first_desc);
+    let first_desc: &&str = match item.item_type {
+        ItemType::Teapot1 | ItemType::Teapot2 | ItemType::Teapot3 => TEAPOT_DESCRIPTIONS
+            .get(item_types.2)
+            .expect("the corresponding description for a given teapot"),
+        ItemType::Vase1 | ItemType::Vase2 | ItemType::Vase3 => VASE_DESCRIPTIONS
+            .get(item_types.2)
+            .expect("the corresponding description for a given vase"),
+    };
+    description.push(match first_desc {
+        &desc_string => GString::from(desc_string),
+    });
 
     // desc of wear
     let wear_list = match item_types.0 {
@@ -144,13 +152,22 @@ pub fn generate_description(item: &Item, item_types: (usize, usize, usize)) -> A
     };
     let mut wear_format_hashmap: HashMap<String, String> = HashMap::new();
     let mut i: usize = 0;
-    for &desc in wear_list.get(item_types.1 + 1).expect("line 146").iter() {
+    for &desc in wear_list
+        .get(item_types.1 + 1)
+        .expect("the appropriate non-formatted wear description")
+        .iter()
+    {
         wear_format_hashmap.insert(i.to_string(), desc.to_string());
         i += 1;
     }
     let wear_desc: Vec<GString> = wear_list[0]
         .choose_multiple(&mut rng, wear_desc_amt)
-        .map(|&desc| GString::from(strfmt(desc, &wear_format_hashmap).expect("line 152")))
+        .map(|&desc| {
+            GString::from(
+                strfmt(desc, &wear_format_hashmap)
+                    .expect("an appropriate wear description that's been formatted"),
+            )
+        })
         .collect();
     description.extend(wear_desc);
 
@@ -171,7 +188,10 @@ pub fn format_event_lines(
     world: &World,
     record: &ItemMoveRecord,
 ) -> Array<GString> {
-    let event = world.events.get(&record.expect_event()).expect("line 173");
+    let event = world
+        .events
+        .get(&record.expect_event())
+        .expect("the event obj associated with the given record");
     let mut lines_gstring: Array<GString> = Array::new();
 
     // get format parameters ready
@@ -180,13 +200,13 @@ pub fn format_event_lines(
     let owner = world
         .characters
         .get(&record.expect_owner())
-        .expect("line 179");
+        .expect("reference to the character obj of the owner of the item with the given record");
     format_vars.insert("owner_name".to_string(), owner.name.clone());
     // insert city name
     let city = world
         .cities
         .get(&record.expect_location())
-        .expect("line 182");
+        .expect("reference to the city obj of the given record");
     format_vars.insert("city_name".to_string(), city.name.clone());
     // insert pronouns of owner
     format_vars.insert(
@@ -206,7 +226,7 @@ pub fn format_event_lines(
         let old_owner = world
             .characters
             .get(&event.characters[1])
-            .expect("line 205");
+            .expect("reference to the character object of the old owner of the item associated with the given record");
         format_vars.insert("old_owner_name".to_string(), old_owner.name.clone());
         format_vars.insert(
             "nominative_pronoun1".to_string(),
@@ -229,7 +249,8 @@ pub fn format_event_lines(
     // format all lines
     for &line in lines {
         // format line
-        let line_formatted = strfmt(line, &format_vars).expect("line 231");
+        let line_formatted = strfmt(line, &format_vars)
+            .expect("one of the formatted lines of the story generated for this event");
         println!("Creation event line: {:?}", line_formatted);
         lines_gstring.push(&line_formatted.into());
     }
@@ -241,31 +262,49 @@ pub fn format_event_lines(
 pub fn generate_lines_from_event(world: &World, record: &ItemMoveRecord) -> Option<Array<GString>> {
     let event = world
         .events
-        .get(&record.event.expect("line 241"))
-        .expect("line 241");
+        .get(
+            &record
+                .event
+                .expect("the event id of the event associated with the given record"),
+        )
+        .expect("the event obj of the event associated with the given record");
     match event.event_type {
         EventType::EventCreation(_) => {
             let &lines = CREATION_LINES
                 .choose(&mut rand::thread_rng())
-                .expect("line 247");
+                .expect("randomly chosen creation line");
             Some(format_event_lines(lines, world, record))
         }
         EventType::EventDeath => {
             let &lines = DEATH_LINES
                 .choose(&mut rand::thread_rng())
-                .expect("line 253");
+                .expect("randomly chosen death line");
             Some(format_event_lines(lines, world, record))
         }
         EventType::EventMove => {
             let &lines = MOVE_LINES
                 .choose(&mut rand::thread_rng())
-                .expect("line 259");
+                .expect("randomly chosen move line");
             Some(format_event_lines(lines, world, record))
         }
         EventType::EventEncounter => {
-            let &lines = EXCHANGE_LINES
+            let encountered_id = event
+                .characters
+                .get(1)
+                .expect("the id of the character that is encountered");
+            let is_postmortem_encounter = world
+                .characters
+                .get(encountered_id)
+                .expect("the character struct for the encountered character")
+                .has_died(world);
+            let const_lines = if is_postmortem_encounter {
+                POSTMORTEM_EXCHANGE_LINES
+            } else {
+                EXCHANGE_LINES
+            };
+            let &lines = const_lines
                 .choose(&mut rand::thread_rng())
-                .expect("line 265");
+                .expect("randomly chosen exchange line");
             Some(format_event_lines(lines, world, record))
         }
         _ => None,
@@ -277,24 +316,28 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
     let records = &item.owner_records;
     let oldest_records = get_records_from_time(&records, 0);
     println!("oldest records: {:?}", oldest_records);
-    let last_time_seen = records.last().expect("line 279").time;
+    let last_time_seen = records
+        .last()
+        .expect("the last record in the owner records of this item")
+        .time;
     let newest_records = get_records_from_time(&records, last_time_seen);
-    println!(
-        "newest records (last seen at time {:?}): {:?}",
-        last_time_seen, newest_records
-    );
 
     // generate oldest story, special dialogue for this
     let mut oldest_story_lines: Array<GString> = Array::new();
     // add lines for event
     oldest_story_lines.extend_array(
-        &generate_lines_from_event(world, oldest_records.first().expect("line 290"))
-            .expect("line 290"),
+        &generate_lines_from_event(
+            world,
+            oldest_records
+                .first()
+                .expect("oldest record pertaining to this item"),
+        )
+        .expect("lines generated for the oldest record associated with the given item"),
     );
     // choose an outro
     let &outro = STORY_OUTROS
         .choose(&mut rand::thread_rng())
-        .expect("line 294");
+        .expect("randomly chosen story outro");
     oldest_story_lines.push(&outro.into());
     // push to array of stories
     stories.push(ItemStory::new(oldest_story_lines));
@@ -314,12 +357,17 @@ pub fn generate_stories(world: &World, item: &Item) -> Array<Gd<ItemStory>> {
     // choose an intro
     let &intro = STORY_INTROS
         .choose(&mut rand::thread_rng())
-        .expect("line 314");
+        .expect("randomly chosen story intro");
     newest_story_lines.push(&intro.into());
     // add lines for event
     newest_story_lines.extend_array(
-        &generate_lines_from_event(world, newest_records.last().expect("line 320"))
-            .expect("line 320"),
+        &generate_lines_from_event(
+            world,
+            newest_records
+                .last()
+                .expect("newest record associated with the given item"),
+        )
+        .expect("lines generated for the newest record associated with the given ite"),
     );
     // push to array of stories
     stories.push(ItemStory::new(newest_story_lines));
