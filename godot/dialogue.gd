@@ -12,12 +12,16 @@ signal loadResource(item:String, texture:Resource)
 @onready var sprites = {
 	"vase1": load("res://sprites/vase1.png"),
 	"vase2": load("res://sprites/vase2.png"),
-	"vase3": load("res://sprites/vase3.png")
+	"vase3": load("res://sprites/vase3.png"),
+	"teapot1": load("res://sprites/teapot1.png"),
+	"teapot2": load("res://sprites/teapot2.png"),
+	"teapot3": load("res://sprites/teapot3.png")
 }
 
 func _ready():
 	history.generate_history()
 		
+	$TextArea.set_visible(false)
 	for i in range(3):
 		print(i)
 		var item = history.get_item(i)
@@ -25,10 +29,12 @@ func _ready():
 		print(item.description)
 		for story in item.stories:
 			print(story.lines)
+		print("Item"+str(i+1))
+		emit_signal("loadResource", "Item"+str(i+1), sprites[item.item_type])
 	
 
 func _input(event):
-	if event.is_action_pressed("mouse_click") and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+	if event.is_action_pressed("mouse_click") and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		if ongoing_text:
 			advance_text()
 		else:

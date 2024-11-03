@@ -21,8 +21,11 @@ func _input(event):
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		camera.rotate_x(-event.relative.y * mouse_sensitivity)
 		camera.rotation.x = clampf(camera.rotation.x, -deg_to_rad(70), deg_to_rad(70))
+		
 	if event.is_action_pressed("escape"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		
 	if event.is_action_pressed("mouse_click"):
 		if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		print($MainCamera/RayCast3D.get_collider())
