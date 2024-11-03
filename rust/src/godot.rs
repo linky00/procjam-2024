@@ -55,6 +55,7 @@ struct History {
 fn get_item_types(item: &Item) -> (usize, usize, usize) {
     let item_type_string = item.item_type.to_string();
     let item_supertype_i: usize = match item.item_type {
+        // bricabrac
         ItemType::Teapot1
         | ItemType::Teapot2
         | ItemType::Teapot3
@@ -64,7 +65,7 @@ fn get_item_types(item: &Item) -> (usize, usize, usize) {
         | ItemType::Cup1
         | ItemType::Statue
         | ItemType::Orb => 0,
-
+        // accessories
         ItemType::Belt
         | ItemType::Bracelet
         | ItemType::Hat
