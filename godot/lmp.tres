@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://mtbric7hyi1"]
+
+[resource]
+cull_mode = 2
+albedo_color = Color(0.817872, 0.573169, 0.380366, 0.988235)
+emission_enabled = true
+emission = Color(0.921569, 0.564706, 0.356863, 1)
+emission_energy_multiplier = 0.14
+subsurf_scatter_enabled = true
+subsurf_scatter_strength = 0.12
+subsurf_scatter_skin_mode = true

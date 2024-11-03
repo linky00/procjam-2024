@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://q8f0m826d0d1"]
+
+[ext_resource type="PackedScene" uid="uid://sdpndho1jvhu" path="res://dialogue.tscn" id="1_10nrf"]
+[ext_resource type="PackedScene" uid="uid://dda5iklgsttrf" path="res://node_3d.tscn" id="2_emcu1"]
+
+[node name="Main" type="Node"]
+
+[node name="Dialogue" parent="." instance=ExtResource("1_10nrf")]
+
+[node name="Shop Scene" parent="." instance=ExtResource("2_emcu1")]
+
+[node name="Node3D" type="Node3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.38558, 1.15008, -0.517658)

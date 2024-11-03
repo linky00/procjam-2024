@@ -1,0 +1,74 @@
+[gd_scene load_steps=10 format=3 uid="uid://q8f0m826d0d1"]
+
+[ext_resource type="PackedScene" uid="uid://sdpndho1jvhu" path="res://dialogue.tscn" id="1_10nrf"]
+[ext_resource type="PackedScene" uid="uid://dda5iklgsttrf" path="res://node_3d.tscn" id="2_emcu1"]
+[ext_resource type="FontFile" uid="uid://wluo4drj5mww" path="res://fonts/Underdog-Regular.ttf" id="2_sit0v"]
+[ext_resource type="Texture2D" uid="uid://clqeul4aqaoay" path="res://sprites/shopkeeper_1.png" id="3_6o14m"]
+[ext_resource type="AudioStream" uid="uid://oeh65wk0exee" path="res://audio/after the dust has settled.mp3" id="4_oqrsw"]
+[ext_resource type="Script" path="res://movement.gd" id="5_u2e41"]
+[ext_resource type="Shape3D" uid="uid://iatsgw107br" path="res://ui/capsule.tres" id="6_uqep8"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_hpbeb"]
+
+[sub_resource type="Theme" id="Theme_shrad"]
+
+[node name="Main" type="Node"]
+
+[node name="Dialogue" parent="." instance=ExtResource("1_10nrf")]
+clip_contents = true
+offset_left = -6.0
+offset_top = 12.0
+offset_right = -6.0
+offset_bottom = 12.0
+
+[node name="TextArea" type="PanelContainer" parent="Dialogue"]
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("CanvasItemMaterial_hpbeb")
+clip_contents = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.6
+anchor_right = 0.95
+anchor_bottom = 0.9
+offset_left = 6.0
+offset_top = -12.0
+offset_right = 46.0
+offset_bottom = 28.0
+
+[node name="TextBox" type="Label" parent="Dialogue/TextArea"]
+layout_mode = 2
+size_flags_vertical = 1
+size_flags_stretch_ratio = 0.9
+theme_override_fonts/font = ExtResource("2_sit0v")
+theme_override_font_sizes/font_size = 60
+text = "hello world!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Panel" type="Panel" parent="Dialogue/TextArea"]
+layout_mode = 2
+theme = SubResource("Theme_shrad")
+
+[node name="History2" type="History" parent="Dialogue"]
+
+[node name="Shop Scene" parent="." instance=ExtResource("2_emcu1")]
+
+[node name="Sprite3D" type="Sprite3D" parent="Shop Scene"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0.206273, 1.0629, -4.85593)
+billboard = 1
+texture = ExtResource("3_6o14m")
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="Shop Scene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.99629, 1.41763, -1.46969)
+script = ExtResource("5_u2e41")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Shop Scene/CharacterBody3D"]
+shape = ExtResource("6_uqep8")
+
+[node name="Camera3D" type="Camera3D" parent="Shop Scene/CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01605, -0.417616, 1.46969)
+
+[node name="AfterTheDustHasSettled" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_oqrsw")
+volume_db = 0.455
