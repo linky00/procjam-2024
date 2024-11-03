@@ -77,6 +77,15 @@ fn get_item_types(item: &Item) -> (usize, usize, usize) {
     let item_type_i: usize = match item.item_type {
         ItemType::Teapot1 | ItemType::Teapot2 | ItemType::Teapot3 => 0,
         ItemType::Vase1 | ItemType::Vase2 | ItemType::Vase3 => 1,
+        ItemType::Cup1 => 2,
+        ItemType::Statue => 3,
+        ItemType::Orb => 4,
+        ItemType::Belt => 5,
+        ItemType::Bracelet => 6,
+        ItemType::Hat => 7,
+        ItemType::Shoes1 | ItemType::Shoes2 | ItemType::Shoes3 => 8,
+        ItemType::Sunglasses => 9,
+        ItemType::Necklace => 10,
         _ => 0,
     };
     let mut item_subtype_i: usize = item_type_string
