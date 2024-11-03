@@ -28,7 +28,7 @@ const NUM_LAYERS: usize = 5;
 const MIN_CITIES_IN_LAYER: usize = 1;
 const MAX_CITIES_IN_LAYER: usize = 2;
 const NUM_CHARACTERS: usize = 6; // number of characters to generate
-const NUM_ITEMS: usize = 3;
+const NUM_ITEMS: usize = 6;
 
 const NUM_EVENTS: usize = 4; // number of event types
 const LIST_EVENTS: [EventType; NUM_EVENTS] = [
@@ -225,14 +225,14 @@ impl World {
         println!("Generated {:?} cities", world.city_id_counter);
 
         // add characters
-        for _ in (0..NUM_CHARACTERS) {
+        for _ in 0..NUM_CHARACTERS {
             world.add_character();
         }
 
         world
     }
 
-    fn add_city(&mut self, layer: usize) -> CityID {
+    fn add_city(&mut self, _layer: usize) -> CityID {
         let id = self.city_id_counter;
         self.city_id_counter += 1;
 
@@ -311,7 +311,7 @@ impl World {
             ),
         );
 
-        let mut item = Item::new(
+        let item = Item::new(
             item_type,
             time,
             initial_owner,
@@ -533,7 +533,7 @@ impl World {
 
         println!("Generating items...");
         // add items
-        for _ in (0..NUM_ITEMS) {
+        for _ in 0..NUM_ITEMS {
             let creator_id = self
                 .characters
                 .keys()
@@ -897,6 +897,19 @@ pub enum ItemType {
     Vase1,
     Vase2,
     Vase3,
+    Cup1,
+    
+    Orb,
+    Statue,
+    
+    Belt,
+    Bracelet,
+    Hat,
+    Shoes1,
+    Shoes2,
+    Shoes3,
+    Sunglasses,
+    Necklace
 }
 
 impl std::fmt::Display for ItemType {
@@ -908,11 +921,22 @@ impl std::fmt::Display for ItemType {
             ItemType::Vase1 => write!(f, "vase1"),
             ItemType::Vase2 => write!(f, "vase2"),
             ItemType::Vase3 => write!(f, "vase3"),
+            ItemType::Belt => write!(f, "belt1"),
+            ItemType::Bracelet => write!(f, "bracelet1"),
+            ItemType::Cup1 => write!(f, "cup1"),
+            ItemType::Hat => write!(f, "hat1"),
+            ItemType::Orb => write!(f, "orb1"),
+            ItemType::Shoes1 => write!(f, "shoes1"),
+            ItemType::Shoes2 => write!(f, "shoes2"),
+            ItemType::Shoes3 => write!(f, "shoes3"),
+            ItemType::Statue => write!(f, "statue1"),
+            ItemType::Sunglasses => write!(f, "sunglasses1"),
+            ItemType::Necklace => write!(f, "necklace1")
         }
     }
 }
 
-const NUM_ITEM_TYPES: usize = 6; // number of item types
+const NUM_ITEM_TYPES: usize = 17; // number of item types
 const LIST_ITEM_TYPES: [ItemType; NUM_ITEM_TYPES] = [
     ItemType::Teapot1,
     ItemType::Teapot2,
@@ -920,6 +944,18 @@ const LIST_ITEM_TYPES: [ItemType; NUM_ITEM_TYPES] = [
     ItemType::Vase1,
     ItemType::Vase2,
     ItemType::Vase3,
+    ItemType::Cup1,
+    ItemType::Statue,
+    ItemType::Orb,
+    
+    ItemType::Belt,
+    ItemType::Bracelet,
+    ItemType::Hat,
+    ItemType::Shoes1,
+    ItemType::Shoes2,
+    ItemType::Shoes3,
+    ItemType::Sunglasses,
+    ItemType::Necklace
 ];
 
 impl ItemType {
@@ -969,7 +1005,7 @@ impl Item {
         Item {
             item_type: item_type,
             owner_records: vec![ItemMoveRecord {
-                time: 0,
+                time: time,
                 new_owner: Some(initial_owner),
                 new_location: Some(initial_location),
                 event: Some(creation_event),

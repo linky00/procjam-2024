@@ -34,7 +34,7 @@ func _input(event):
 		
 		var clicked_on = $MainCamera/RayCast3D.get_collider()
 		if clicked_on:
-			if clicked_on.name.substr(0,4) == "Item":
+			if clicked_on.name.substr(0,4) == "Item" or clicked_on.name == "Shopkeeper":
 				emit_signal("approach", clicked_on.name)
 			else:
 				emit_signal("advance")
