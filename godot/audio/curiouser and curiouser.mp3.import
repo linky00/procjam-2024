@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dmi6wqofop12n"
+path="res://.godot/imported/curiouser and curiouser.mp3-d384a9899b07b3b495e5379c5d56adc4.mp3str"
+
+[deps]
+
+source_file="res://audio/curiouser and curiouser.mp3"
+dest_files=["res://.godot/imported/curiouser and curiouser.mp3-d384a9899b07b3b495e5379c5d56adc4.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

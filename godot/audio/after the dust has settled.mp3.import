@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://yfg6q3etkwgg"
+path="res://.godot/imported/after the dust has settled.mp3-2e7434c7f69d89d8ef58f56e7af4efca.mp3str"
+
+[deps]
+
+source_file="res://audio/after the dust has settled.mp3"
+dest_files=["res://.godot/imported/after the dust has settled.mp3-2e7434c7f69d89d8ef58f56e7af4efca.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

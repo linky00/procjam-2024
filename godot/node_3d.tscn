@@ -1,0 +1,545 @@
+[gd_scene load_steps=59 format=3 uid="uid://dda5iklgsttrf"]
+
+[ext_resource type="PackedScene" uid="uid://ckh4uwsilgx02" path="res://objects/room.glb" id="1_40iyh"]
+[ext_resource type="Material" uid="uid://citkraavg2e6i" path="res://emissiv.tres" id="2_7y386"]
+[ext_resource type="Texture2D" uid="uid://dxrod5o0asbom" path="res://objects/room_Substance_graph_basecolor.png" id="3_srg06"]
+[ext_resource type="PackedScene" uid="uid://b3xwqflhcoqfp" path="res://objects/other objects/carpet.glb" id="6_ff6pc"]
+[ext_resource type="PackedScene" uid="uid://ce8vqntyd3a1r" path="res://objects/other objects/carpet3.glb" id="7_jacdk"]
+[ext_resource type="PackedScene" uid="uid://braf046yu0b3c" path="res://objects/other objects/carpet2.glb" id="8_wit5f"]
+[ext_resource type="PackedScene" uid="uid://dayi3hn1muyvm" path="res://objects/other objects/bulb.glb" id="9_sj0ot"]
+[ext_resource type="Material" uid="uid://cup3becm77lkb" path="res://wod.tres" id="10_7jaah"]
+[ext_resource type="ArrayMesh" uid="uid://dxrt6a3ikyi2w" path="res://objects/furniture/drawer.obj" id="11_qxee8"]
+[ext_resource type="Texture2D" uid="uid://b572l4r1kip1j" path="res://textures/wod2/Substance_graph_basecolor.png" id="12_1si7d"]
+[ext_resource type="Material" uid="uid://d0w4v6fbw0shn" path="res://wod2.tres" id="12_gb7ga"]
+[ext_resource type="ArrayMesh" uid="uid://cm3mrtjf30w32" path="res://objects/tbl/table2.obj" id="13_76cee"]
+[ext_resource type="ArrayMesh" uid="uid://b0yskx5sqotn1" path="res://objects/tbl/table.obj" id="13_y7kuv"]
+[ext_resource type="ArrayMesh" uid="uid://cb4q150ilk5c" path="res://objects/furniture/drawer2.obj" id="14_lv11o"]
+[ext_resource type="Texture2D" uid="uid://c4ml5fa3eeay4" path="res://textures/dust/Substance_graph_roughness.png" id="15_ap6i1"]
+[ext_resource type="ArrayMesh" uid="uid://b1ecytsl5x2ne" path="res://objects/other objects/cloth.obj" id="16_83ht2"]
+[ext_resource type="ArrayMesh" uid="uid://c4mhwk1jxmqht" path="res://objects/other objects/artwork/pic1.obj" id="17_mulf4"]
+[ext_resource type="Texture2D" uid="uid://bhjayqp7etp6j" path="res://objects/other objects/artwork/IMG_2320.png" id="18_ut6t4"]
+[ext_resource type="Material" uid="uid://bmk37bo3ii1h" path="res://new_standard_material_3d.tres" id="19_chu6x"]
+[ext_resource type="ArrayMesh" uid="uid://cotirxeei8emw" path="res://objects/other objects/artwork/pic2.obj" id="20_qy6gk"]
+[ext_resource type="Texture2D" uid="uid://cvvu52gjc3mdx" path="res://objects/other objects/artwork/IMG_2315.png" id="21_d3gxg"]
+[ext_resource type="ArrayMesh" uid="uid://b7v2t15mnnto7" path="res://objects/other objects/artwork/pic3.obj" id="22_vyrxj"]
+[ext_resource type="Texture2D" uid="uid://dvgwhbfvh1rmt" path="res://objects/other objects/artwork/IMG_2316.png" id="23_nv1c6"]
+[ext_resource type="Texture2D" uid="uid://gcfwauarehy4" path="res://textures/wod/Substance_graph_roughness.png" id="24_1pf7o"]
+[ext_resource type="ArrayMesh" uid="uid://b3unt6kex78dx" path="res://objects/other objects/artwork/pic4.obj" id="25_irx80"]
+[ext_resource type="Texture2D" uid="uid://cqnrc5asdxudy" path="res://objects/other objects/artwork/IMG_2309.png" id="26_wp7cf"]
+[ext_resource type="Texture2D" uid="uid://hdewex2bci3v" path="res://objects/other objects/artwork/IMG_2319.png" id="27_5hejv"]
+[ext_resource type="ArrayMesh" uid="uid://cmknd3yajlvx4" path="res://objects/other objects/lamp2.obj" id="28_l3m36"]
+[ext_resource type="Texture2D" uid="uid://d2t83h7p425qt" path="res://objects/other objects/artwork/IMG_2318.png" id="28_ybkiy"]
+[ext_resource type="ArrayMesh" uid="uid://dt4g1fuxp1kla" path="res://objects/other objects/lamp1.obj" id="29_637ge"]
+[ext_resource type="Material" uid="uid://mtbric7hyi1" path="res://lmp.tres" id="29_dvq1g"]
+[ext_resource type="Material" uid="uid://b0xvj331u147" path="res://gold.tres" id="32_5m4t8"]
+[ext_resource type="ArrayMesh" uid="uid://cnki0htdy7eo1" path="res://objects/furniture/cabinet2.obj" id="32_l2ae8"]
+[ext_resource type="ArrayMesh" uid="uid://crlk186k3vwpg" path="res://objects/furniture/cabinet.obj" id="33_ul6l7"]
+[ext_resource type="Shape3D" uid="uid://50psbapmc33s" path="res://box_shape.tres" id="35_n4eta"]
+[ext_resource type="Shape3D" uid="uid://d1j8e7rcriovd" path="res://wall.tres" id="35_uc034"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_fot1n"]
+
+[sub_resource type="Environment" id="Environment_8lmqs"]
+background_energy_multiplier = 0.2
+tonemap_mode = 2
+ssao_enabled = true
+glow_enabled = true
+glow_strength = 0.53
+fog_enabled = true
+fog_light_color = Color(0.534062, 0.553708, 0.565246, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lxl6s"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pv0es"]
+transparency = 1
+blend_mode = 3
+albedo_color = Color(0.775063, 0.775063, 0.775063, 0.505882)
+
+[sub_resource type="BoxMesh" id="BoxMesh_e0wtu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cpjef"]
+albedo_texture = ExtResource("3_srg06")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_abpw7"]
+albedo_texture = ExtResource("12_1si7d")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_miqf5"]
+emission_shape = 3
+emission_box_extents = Vector3(5, 2, 12)
+direction = Vector3(0, 0, 0)
+spread = 101.385
+initial_velocity_max = 2.0
+gravity = Vector3(0, -0.5, 0)
+scale_min = 0.0
+scale_max = 0.5
+hue_variation_min = -0.3
+hue_variation_max = 0.11
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pft6n"]
+transparency = 1
+blend_mode = 1
+albedo_texture = ExtResource("15_ap6i1")
+billboard_mode = 1
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_wyiom"]
+lightmap_size_hint = Vector2i(2, 2)
+material = SubResource("StandardMaterial3D_pft6n")
+size = Vector2(0.1, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uvrud"]
+albedo_texture = ExtResource("18_ut6t4")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_co0no"]
+albedo_texture = ExtResource("21_d3gxg")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_878ag"]
+albedo_color = Color(0.736021, 0.717074, 0.7008, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e78wb"]
+albedo_texture = ExtResource("23_nv1c6")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8wu4e"]
+albedo_color = Color(0.499047, 0.437933, 0.340028, 1)
+roughness_texture = ExtResource("24_1pf7o")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_60wca"]
+albedo_texture = ExtResource("26_wp7cf")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cf2v5"]
+albedo_color = Color(0.981446, 0.793733, 0.567278, 1)
+albedo_texture = ExtResource("12_1si7d")
+roughness_texture = ExtResource("24_1pf7o")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5qo88"]
+albedo_texture = ExtResource("27_5hejv")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p68e2"]
+albedo_texture = ExtResource("28_ybkiy")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wwnhy"]
+cull_mode = 2
+albedo_color = Color(0.732323, 0.600763, 0.501518, 0.988235)
+emission_enabled = true
+emission = Color(0.921569, 0.564706, 0.356863, 1)
+emission_energy_multiplier = 0.14
+subsurf_scatter_enabled = true
+subsurf_scatter_strength = 0.12
+subsurf_scatter_skin_mode = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4ge5u"]
+albedo_color = Color(0.625597, 0.625597, 0.625597, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vhx6b"]
+albedo_color = Color(0.929412, 0.113725, 0.717647, 1)
+albedo_texture = ExtResource("21_d3gxg")
+roughness_texture = ExtResource("24_1pf7o")
+
+[node name="Node3D" type="Node3D"]
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(-0.77636, -0.147661, -0.612749, -0.493414, 0.747294, 0.445077, 0.392183, 0.647879, -0.653027, -1.8883, 2.10123, -2.28648)
+light_indirect_energy = 1.84
+light_volumetric_fog_energy = 4.8
+light_size = 1.0
+shadow_enabled = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(0.987063, 0.0733685, -0.142562, -0.0146024, 0.9266, 0.375764, 0.159667, -0.368821, 0.915684, -2.12001, 1.49955, 7.32539)
+light_color = Color(0.129558, 0.129558, 0.129558, 1)
+light_energy = 4.82
+light_indirect_energy = 16.0
+light_specular = 1.3
+shadow_enabled = true
+shadow_blur = 7.063
+
+[node name="room2" parent="." instance=ExtResource("1_40iyh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.92858, 0, 0.710095)
+
+[node name="window emissive" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0262935, 0, -0.00834036)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.642965, 0, 0, 0, 0.865006, 0, 0, 0, 0.118, -1.46761, 0.982754, 8.81279)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.642965, 0, 0, 0, 0.865006, 0, 0, 0, 0.118, -2.39408, 0.982754, 8.81279)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.642965, 0, 0, 0, 0.865006, 0, 0, 0, 0.118, -2.39408, 1.86679, 8.83102)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.642965, 0, 0, 0, 0.865006, 0, 0, 0, 0.118, -1.46386, 1.86679, 8.83102)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.490775, 0, 0.0762331, 0, 0.865006, 0, -0.415384, 0, 0.0900693, 0.523036, 1.0137, 7.73843)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.490775, 0, 0.0762331, 0, 0.865006, 0, -0.415384, 0, 0.0900693, -0.184139, 1.0137, 8.33697)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.490775, 0, 0.0762331, 0, 0.865006, 0, -0.415384, 0, 0.0900693, -0.172362, 1.89773, 8.35089)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D13" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(-2.81049e-08, 0, 0.118, 0, 0.865006, 0, -0.642965, 0, -5.15794e-09, 1.01287, 1.0137, 6.60086)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D14" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(-2.81049e-08, 0, 0.118, 0, 0.865006, 0, -0.642965, 0, -5.15794e-09, 1.03109, 1.89773, 6.60051)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D15" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(-2.81049e-08, 0, 0.118, 0, 0.865006, 0, -0.642965, 0, -5.15794e-09, -4.84596, 1.01785, 6.60792)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D16" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(-2.81049e-08, 0, 0.118, 0, 0.865006, 0, -0.642965, 0, -5.15794e-09, -4.86883, 1.90188, 6.60229)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.490775, 0, 0.0762331, 0, 0.865006, 0, -0.415384, 0, 0.0900693, 0.537675, 1.89773, 7.74992)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D9" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.493864, 0, -0.0755581, 0, 0.865006, 0, 0.411706, 0, 0.0906362, -3.62743, 0.973134, 8.37772)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D10" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.493864, 0, -0.0755581, 0, 0.865006, 0, 0.411706, 0, 0.0906362, -4.33905, 0.973134, 7.78448)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D11" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.493864, 0, -0.0755581, 0, 0.865006, 0, 0.411706, 0, 0.0906362, -4.35073, 1.85717, 7.79848)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="MeshInstance3D12" type="MeshInstance3D" parent="window emissive"]
+transform = Transform3D(0.493864, 0, -0.0755581, 0, 0.865006, 0, 0.411706, 0, 0.0906362, -3.63622, 1.85717, 8.39412)
+mesh = SubResource("BoxMesh_fot1n")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_7y386")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_8lmqs")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0506813, 0, 0, 0, 2.38363, 0, 0, 0, 2.11623, 0.904123, 0.997652, -2.4581)
+mesh = SubResource("BoxMesh_lxl6s")
+surface_material_override/0 = SubResource("StandardMaterial3D_pv0es")
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.90301, 1.9107, -2.48867)
+light_color = Color(1, 0.917647, 0.705882, 1)
+light_indirect_energy = 9.3
+light_size = 0.677
+shadow_enabled = true
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(4.20503, 0, 0, 0, 0.183462, 0, 0, 0, 12.7174, -1.92466, 4.45146, 0.175441)
+mesh = SubResource("BoxMesh_e0wtu")
+surface_material_override/0 = SubResource("StandardMaterial3D_cpjef")
+
+[node name="carpet" parent="." instance=ExtResource("6_ff6pc")]
+transform = Transform3D(0.986799, 0, 0.161948, 0, 1, 0, -0.161948, 0, 0.986799, -2.15891, 0.00431728, -1.91158)
+
+[node name="carpet3" parent="." instance=ExtResource("7_jacdk")]
+transform = Transform3D(0.125621, 0, 1.3227, 0, 1.3299, 0, -1.92381, 0, 0.08637, -1.17312, 0, 1.03985)
+
+[node name="carpet2" parent="." instance=ExtResource("8_wit5f")]
+transform = Transform3D(0.991484, 0.00331478, 0.130187, -0.00340804, 0.999994, 0.00049359, -0.130185, -0.00093308, 0.991489, -1.09284, 0, 4.66031)
+
+[node name="bulb" parent="." instance=ExtResource("9_sj0ot")]
+transform = Transform3D(0.0718073, 0, 0, 0, 0.0718073, 0, 0, 0, 0.0718073, -1.91102, 1.91425, -2.49005)
+
+[node name="Drawer" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.202591, 0, 0, 0, 0.202591, 0, 0, 0, 0.202591, -4.47264, 0.693724, -0.667057)
+mesh = ExtResource("11_qxee8")
+surface_material_override/0 = ExtResource("12_gb7ga")
+surface_material_override/1 = SubResource("StandardMaterial3D_abpw7")
+
+[node name="Table" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.36417, 0, 0, 0, 1.36417, 0, 0, 0, 1.36417, -1.76805, -0.0978475, -4.41611)
+material_override = ExtResource("12_gb7ga")
+mesh = ExtResource("13_y7kuv")
+surface_material_override/0 = ExtResource("10_7jaah")
+
+[node name="Table4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.866683, 0, 0.302422, 0, 1.26464, 0, -0.302422, 0, 0.866683, 0.0690999, -0.0898998, 5.19883)
+material_override = ExtResource("12_gb7ga")
+mesh = ExtResource("13_y7kuv")
+surface_material_override/0 = ExtResource("10_7jaah")
+
+[node name="Table2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.041213, 0, -0.99915, 0, 1, 0, 0.99915, 0, -0.041213, -3.47023, -0.00556123, -3.99281)
+mesh = ExtResource("13_76cee")
+surface_material_override/0 = ExtResource("10_7jaah")
+
+[node name="Table3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0644471, -0.996293, 0.0453805, -0.00675239, -0.05694, -0.803586, 0.989834, 0.0644792, -0.00843655, -3.84246, -1.9923, -2.17911)
+mesh = ExtResource("13_76cee")
+surface_material_override/0 = ExtResource("10_7jaah")
+
+[node name="Drawer2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.00347792, 0, -0.278965, 0, 0.270387, 0, 0.270364, 0, 0.00358856, -3.31868, -0.015083, -6.53181)
+mesh = ExtResource("14_lv11o")
+surface_material_override/0 = ExtResource("10_7jaah")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -1.93364, 2.18769, 0.797885)
+transparency = 0.02
+amount = 50
+speed_scale = 0.05
+interpolate = false
+process_material = SubResource("ParticleProcessMaterial_miqf5")
+draw_pass_1 = SubResource("QuadMesh_wyiom")
+
+[node name="Cloth" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0129164, 0, -1.25502, 0, 1.25273, 0, 1.52901, 0, 0.0106019, -3.84923, 0.0723845, -5.40633)
+mesh = ExtResource("16_83ht2")
+surface_material_override/0 = ExtResource("12_gb7ga")
+
+[node name="Cloth3" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.035968, 0, -1.49912, 0, 0.854985, 0, 1.28606, 0, -0.0419267, -0.163961, -0.0264408, -3.82407)
+mesh = ExtResource("16_83ht2")
+
+[node name="Cloth2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0159643, 0, -1.55118, 0, 1.85915, 0, 1.88982, 0, 0.0131037, -0.121723, 0.190946, -6.1192)
+mesh = ExtResource("16_83ht2")
+
+[node name="Pic1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.698812, 0.702738, 0.133494, 0.0144189, 0.172749, -0.98486, -0.71516, 0.690157, 0.110586, -1.83214, 0.783221, -6.47577)
+mesh = ExtResource("17_mulf4")
+surface_material_override/0 = SubResource("StandardMaterial3D_uvrud")
+surface_material_override/1 = ExtResource("19_chu6x")
+
+[node name="Pic5" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.163359, -0.511845, -0.0314536, -0.51281, -0.163024, -0.0104714, 0.000431095, 0.033148, -0.53718, -4.39775, 0.310401, 1.60247)
+mesh = ExtResource("17_mulf4")
+surface_material_override/0 = SubResource("StandardMaterial3D_uvrud")
+surface_material_override/1 = ExtResource("19_chu6x")
+
+[node name="Pic2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.513842, 0, 0, 0, -0.1434, -0.493426, 0, 0.493426, -0.1434, -4.36391, 0.414806, -1.54967)
+mesh = ExtResource("20_qy6gk")
+surface_material_override/0 = SubResource("StandardMaterial3D_co0no")
+surface_material_override/1 = SubResource("StandardMaterial3D_878ag")
+
+[node name="Pic3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.110937, 0.475441, 0.160256, -0.500813, 0.114818, 0.0060467, -0.0302145, -0.157498, 0.488175, -4.62358, 1.77873, -0.414514)
+mesh = ExtResource("20_qy6gk")
+surface_material_override/0 = SubResource("StandardMaterial3D_co0no")
+surface_material_override/1 = SubResource("StandardMaterial3D_878ag")
+
+[node name="Pic4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0381455, 0.991022, 0.128143, 0.00349649, 0.128103, -0.991755, -0.999266, 0.0382791, 0.00142148, -4.59728, 0.791786, 0.985748)
+mesh = ExtResource("22_vyrxj")
+surface_material_override/0 = SubResource("StandardMaterial3D_e78wb")
+surface_material_override/1 = SubResource("StandardMaterial3D_8wu4e")
+
+[node name="Pic6" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.140072, -0.990141, 0, 0.990141, 0.140072, 0, 0, 0, 1, 0.82568, 0.719498, 3.36855)
+mesh = ExtResource("25_irx80")
+surface_material_override/0 = SubResource("StandardMaterial3D_60wca")
+surface_material_override/1 = SubResource("StandardMaterial3D_cf2v5")
+
+[node name="Pic7" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.47053, 1.19209e-07, 0.0452369)
+mesh = ExtResource("17_mulf4")
+surface_material_override/0 = SubResource("StandardMaterial3D_5qo88")
+surface_material_override/1 = ExtResource("19_chu6x")
+
+[node name="Pic9" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1.71015e-08, -0.391237, 4.66546e-09, 0, 4.66546e-09, 0.391237, -0.391237, 1.71015e-08, -2.03934e-16, 0.944381, 1.61805, 1.62932)
+mesh = ExtResource("17_mulf4")
+surface_material_override/0 = SubResource("StandardMaterial3D_5qo88")
+surface_material_override/1 = ExtResource("19_chu6x")
+
+[node name="Pic8" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.378939, -0.216934, 0.0542921, -0.00804558, 0.119982, 0.423253, -0.22348, 0.363521, -0.107297, -1.16967, 0.323804, -3.56422)
+mesh = ExtResource("17_mulf4")
+surface_material_override/0 = SubResource("StandardMaterial3D_p68e2")
+surface_material_override/1 = ExtResource("19_chu6x")
+
+[node name="Lamp2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.73996, -0.000716149, 0.0019244, 0.000714017, 1.73996, 0.00189499, -0.00192519, -0.00189419, 1.73996, -4.24839, -0.141265, 3.1886)
+mesh = ExtResource("28_l3m36")
+surface_material_override/0 = ExtResource("10_7jaah")
+surface_material_override/1 = ExtResource("29_dvq1g")
+
+[node name="Lamp1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.22565, 0, 0.453795, 0, 1.59865, 0, -0.453795, 0, 1.22565, 1.43349, -0.0421665, -7.58736)
+mesh = ExtResource("29_637ge")
+surface_material_override/0 = ExtResource("12_gb7ga")
+
+[node name="OmniLight3D3" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.25437, 1.39716, 3.16544)
+light_color = Color(0.966774, 0.773449, 0.694946, 1)
+light_energy = 0.4
+light_indirect_energy = 16.0
+light_size = 0.185
+shadow_enabled = true
+shadow_blur = 10.0
+
+[node name="OmniLight3D4" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.25129, 2.0154, 3.16717)
+light_color = Color(0.966774, 0.773449, 0.694946, 1)
+light_energy = 0.2
+light_indirect_energy = 16.0
+light_size = 1.098
+shadow_enabled = true
+shadow_blur = 0.625
+
+[node name="Lamp3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.730944, 0, 0, 0, 1, -4.01882, -0.045886, -1.24514)
+mesh = ExtResource("28_l3m36")
+surface_material_override/0 = ExtResource("32_5m4t8")
+surface_material_override/1 = SubResource("StandardMaterial3D_wwnhy")
+
+[node name="Cabinet2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.845258, 0, 0, 0, 0.845258, 0, 0, 0, 0.845258, -4.39256, 0.085811, 2.45172)
+mesh = ExtResource("32_l2ae8")
+surface_material_override/0 = ExtResource("10_7jaah")
+
+[node name="Cabinet" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.598699, 0, 0.217401)
+mesh = ExtResource("33_ul6l7")
+
+[node name="Pic10" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.10247, 0.488672, -0.0296515, -0.000291374, -0.0303549, -0.499258, -0.489571, -0.102263, 0.00650334, -2.69984, 0.389815, -4.36954)
+mesh = ExtResource("17_mulf4")
+surface_material_override/1 = ExtResource("10_7jaah")
+
+[node name="Pic11" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.145002, 0.393825, -0.106029, 0.0144374, -0.0641036, -0.662219, -0.697396, -0.0832109, 0.00833637, -2.78581, 0.389815, -4.36954)
+mesh = ExtResource("17_mulf4")
+surface_material_override/1 = ExtResource("32_5m4t8")
+
+[node name="Pic12" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.10064, 0.475305, -0.118898, 0.0183656, -0.117635, -0.485803, -0.489606, -0.102113, 0.00621687, -2.86641, 0.389815, -4.36954)
+mesh = ExtResource("17_mulf4")
+surface_material_override/0 = SubResource("StandardMaterial3D_4ge5u")
+
+[node name="Pic13" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.0986315, 0.484464, -0.0908909, -0.0123811, -0.107438, -0.42781, -0.585909, -0.0792839, 0.0243408, -2.95065, 0.335817, -4.51698)
+mesh = ExtResource("17_mulf4")
+surface_material_override/1 = ExtResource("19_chu6x")
+
+[node name="Pic14" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.0926262, -0.559701, -0.124668, -0.0010297, 0.126446, -0.566919, 0.573416, -0.0901837, -0.0211561, 0.685854, 0.441216, 4.51472)
+mesh = ExtResource("17_mulf4")
+surface_material_override/0 = SubResource("StandardMaterial3D_vhx6b")
+surface_material_override/1 = ExtResource("19_chu6x")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="Wall1" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.924801, 9.99632, 3.23855)
+shape = ExtResource("35_uc034")
+
+[node name="Wall2" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, -4.88513, 10.0076, 3.19869)
+shape = ExtResource("35_uc034")
+
+[node name="Wall3" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(-2.80971e-08, 0.642788, 0.766044, -1, -4.37114e-08, 0, 3.34849e-08, -0.766044, 0.642788, -3.96344, 10.0076, 7.96564)
+shape = ExtResource("35_uc034")
+
+[node name="Wall4" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1.91069e-15, -4.37114e-08, 1, -1, -4.37114e-08, 0, 4.37114e-08, -1, -4.37114e-08, -1.73949, 10.0076, 8.73655)
+shape = ExtResource("35_uc034")
+
+[node name="Wall6" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1.91069e-15, -4.37114e-08, -1, -1, -4.37114e-08, 0, -4.37114e-08, 1, -4.37114e-08, -1.73949, 10.0076, -6.93804)
+shape = ExtResource("35_uc034")
+
+[node name="Wall5" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(2.80971e-08, -0.642788, 0.766044, -1, -4.37114e-08, 0, 3.34849e-08, -0.766044, -0.642788, 0.744941, 10.0076, 7.64855)
+shape = ExtResource("35_uc034")
+
+[node name="TableBox1" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.253251, -3.84705)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox2" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.06563, 0.253251, -3.84705)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox3" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.10161, 0.253251, -3.84705)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox4" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.10161, 0.253251, -4.85838)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox5" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.10161, 0.253251, -5.89247)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox6" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.77479, 0.253251, -5.73087)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox7" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.52118, 0.253251, -5.73087)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox8" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1075, 0.253251, -4.06505)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox9" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.90706, 0.253251, -0.458991)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox13" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.84284, 0.253251, 2.59094)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox10" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.90706, 0.253251, -0.902829)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox11" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9433, 0.206824, 0.61054)
+shape = ExtResource("35_n4eta")
+
+[node name="TableBox12" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9433, 0.206824, -0.33062)
+shape = ExtResource("35_n4eta")

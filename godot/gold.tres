@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://b0xvj331u147"]
+
+[ext_resource type="Texture2D" uid="uid://gcfwauarehy4" path="res://textures/wod/Substance_graph_roughness.png" id="1_hte45"]
+
+[resource]
+cull_mode = 2
+albedo_color = Color(0.764976, 0.52884, 0.269146, 1)
+roughness_texture = ExtResource("1_hte45")
